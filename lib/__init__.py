@@ -1,1 +1,1 @@
-# Represents some libraries and packages used by sightstone
+# Represents some libraries and packages used by sightstone(developed by me)
