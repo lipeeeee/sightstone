@@ -27,6 +27,7 @@ class BackgroundThread(Thread):
     time_between_runs: int
     running: bool
 
+    # pylint: disable=R0913
     def __init__(
         self,
         fn_to_run: Callable,
