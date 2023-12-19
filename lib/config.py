@@ -60,6 +60,7 @@ class Config:
             file.write(self.json_dict)
 
     def fix_files(self) -> None:
+        """Troubleshoots and fixes some issues that a config can have"""
         if not self.config_folder_exists():
             self.create_config_folder()
             self.create_config_file()
@@ -67,16 +68,20 @@ class Config:
             self.create_config_file()
 
     def config_folder_exists(self) -> bool:
+        """Checks if folder where config is exists"""
         return os.path.exists(self.CONFIG_FOLDER)
 
     def config_file_exists(self) -> bool:
+        """Checks if file where config is exists"""
         return os.path.exists(self.config_file)
 
     def create_config_folder(self) -> None:
+        """Creates the config folder"""
         assert self.CONFIG_FOLDER and not self.config_folder_exists()
         os.mkdir(self.CONFIG_FOLDER)
 
     def create_config_file(self) -> None:
+        """Create the config file with `defaults()`"""
         assert (
             self.config_file and
             not self.config_file_exists() and
@@ -86,6 +91,7 @@ class Config:
         self.save()
 
     def execute_and_save(self, fn: Callable) -> object:
+        """Executes a parameterized function and `save()`s the config"""
         fn_res = fn()
         self.save()
         return fn_res
