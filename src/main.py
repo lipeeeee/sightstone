@@ -1,5 +1,7 @@
 # Sightstone entry point
 
+import dearpygui
+
 def main():
     pass
 
