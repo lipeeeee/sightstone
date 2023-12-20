@@ -1,9 +1,9 @@
 # Sightstone entry point
 
-import dearpygui
+from gui import init_gui
 
 def main():
-    pass
+    init_gui("")
 
 if __name__ == "__main__":
-    pass
+    main()
