@@ -21,4 +21,3 @@ def search_hndw_by_name(target: str) -> int:
 def get_thread_id_process_id(target_hndw: int) -> tuple[int, int]:
     """Gets (thread_id, process_id) from `target_hndw`"""
     return win32process.GetWindowThreadProcessId(target_hndw)
-

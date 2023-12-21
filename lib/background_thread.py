@@ -1,8 +1,4 @@
-"""Asyncronhous background thread
-
-Made to run a certain function continuously between a 
-set period of time
-"""
+# Async background thread to run a certain function periodically
 
 from time import sleep
 from threading import Thread
