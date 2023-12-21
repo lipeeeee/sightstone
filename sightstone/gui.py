@@ -2,8 +2,8 @@
 
 import dearpygui.dearpygui as dpg
 
-WIDTH = 200
-HEIGHT = 300
+WIDTH = 500
+HEIGHT = 400
 
 def init_gui(sightstone_hook):
     """Inits dearpygui window"""
@@ -18,7 +18,7 @@ def init_gui(sightstone_hook):
     dpg.create_viewport(
         title="sightstone", # TODO: Make title safe
         width=WIDTH, height=HEIGHT,
-        resizable=True
+        resizable=False
     )
     dpg.show_viewport()
 
