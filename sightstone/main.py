@@ -2,10 +2,11 @@
 
 from gui import init_gui
 from sightstone import Sightstone
-from league_api_hook import LeagueConnection
+from lca_hook import LeagueConnection
 
 def main():
-    init_gui("")
+    sightstone_engine = Sightstone()
+    init_gui(sightstone_engine)
 
 if __name__ == "__main__":
     main()

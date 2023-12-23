@@ -1,5 +1,6 @@
 """Hook for league api HACK'ing"""
 
+import urllib3
 import re
 import requests
 import sys
@@ -67,14 +68,18 @@ class LeagueConnection:
     LCA_NOT_CONNECTED_OUTPUT = "No Instance(s) Available"  # starts with
     LCA_CONNECTED_OUTPUT = "CommandLine"  # starts with
     CMD_HACK = "WMIC PROCESS WHERE name='LeagueClientUx.exe' GET commandline"
+    CMD_DICT_DEFAULT_VAL = "LCA_NOT_FOUND_VALUE"
     LISTEN_TIMEOUT = 2
 
     def __init__(self) -> None:
-        self.cmd_output_dict: DefaultDict = defaultdict(lambda: "default")
+        self.cmd_output_dict: DefaultDict = defaultdict(lambda: self.CMD_DICT_DEFAULT_VAL)
         self.base_url = "127.0.0.1"
         self.protocol = "https"
         self.username = "riot"
         self.connected = False
+
+        # Disable insecure HTTPS request warning
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
         # Start LCA Listener
         self.listener = BackgroundThread(
@@ -127,7 +132,7 @@ class LeagueConnection:
         reg_expr = r'--([\w-]+)=([^"\s]+|"([^"]+))'
         matches = re.findall(reg_expr, output)
 
-        # Dictionary parse
+        # Regex to dictionary parse
         for entry in matches:
             key = entry[0]
             values = entry[1]
