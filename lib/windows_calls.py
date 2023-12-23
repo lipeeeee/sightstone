@@ -1,7 +1,8 @@
 # Various calls to the windows operating system
 
 import subprocess
-import win32gui, win32process # pyright: ignore could not find module 
+import win32gui # pyright: ignore could not find module
+import win32process # pyright: ignore could not find module
 
 def execute_cmd_command(command: str) -> str:
     """Execute command in cmd, returns STDOUT"""

@@ -56,7 +56,7 @@ class Config:
 
     def save(self) -> None:
         """Saves config to disk"""
-        with open(self.config_file, "w") as file:
+        with open(self.config_file, "w", encoding="utf-8") as file:
             file.write(self.json_dict)
 
     def fix_files(self) -> None:
