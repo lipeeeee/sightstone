@@ -20,7 +20,7 @@ class Sightstone:
             path="lol-challenges/v1/update-player-preferences/",
             json={"challengeIds": []},
         )
-      
+
         return not (response is None or response.status_code != 204)
 
     def __str__(self) -> str:
