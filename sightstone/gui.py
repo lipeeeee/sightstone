@@ -8,8 +8,12 @@ HEIGHT = 400
 def init_gui(sightstone_hook):
     """Inits dearpygui window"""
     dpg.create_context()
-    
-    with dpg.window(label="sightstone", width=WIDTH, height=HEIGHT, no_resize=True, no_title_bar=True, tag="p1"):
+
+    with dpg.window(
+            label="sightstone", 
+            width=WIDTH, height=HEIGHT, 
+            no_resize=True, no_title_bar=True, tag="p1"
+        ):
         with dpg.tab_bar():
             with dpg.tab(label="Client"):
                 dpg.add_checkbox(label="Test", callback=lambda: True)

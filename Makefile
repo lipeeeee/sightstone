@@ -1,2 +1,2 @@
 c: 
-		python sightstone/main.py
+		python3 sightstone/main.py
