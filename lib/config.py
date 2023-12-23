@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 class Config:
-    """Base class 
+    """Base class
 
     Attributes
         - CONFIG_FOLDER(str): the path to the home directory config folder

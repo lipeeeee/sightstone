@@ -19,7 +19,8 @@ def init_gui(sightstone_hook: Sightstone):
         ):
         with dpg.tab_bar():
             with dpg.tab(label="Client"):
-                dpg.add_button(label="Remove Challenges", callback=sightstone_hook.remove_challenges)
+                dpg.add_button(label="Remove Challenges", 
+                               callback=sightstone_hook.remove_challenges)
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake

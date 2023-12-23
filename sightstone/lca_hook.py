@@ -1,15 +1,15 @@
 """Hook for league api HACK'ing"""
 
-from collections import defaultdict
-from typing import DefaultDict
-import sys
-sys.path.append("./") # Fixes unknown import when compiled from repo root
-from lib.background_thread import BackgroundThread
-from lib.windows_calls import execute_cmd_command
 import re
+import sys
 import requests
 import urllib3
 from requests.models import Response
+sys.path.append("./") # Fixes unknown import when compiled from repo root
+from lib.background_thread import BackgroundThread
+from lib.windows_calls import execute_cmd_command
+from collections import defaultdict
+from typing import DefaultDict
 
 class LeagueConnection:
     """A hacked hook of `LCA`(League client api)
