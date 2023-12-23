@@ -2,7 +2,6 @@
 
 from gui import init_gui
 from sightstone import Sightstone
-from lca_hook import LeagueConnection
 
 def main():
     sightstone_engine = Sightstone()

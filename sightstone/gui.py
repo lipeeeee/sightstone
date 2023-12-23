@@ -2,8 +2,8 @@
 
 import string
 import random
-from sightstone import Sightstone
 import dearpygui.dearpygui as dpg
+from sightstone import Sightstone
 
 WIDTH = 500
 HEIGHT = 400
@@ -24,7 +24,7 @@ def init_gui(sightstone_hook: Sightstone):
 
     # safe title for riot detection sake
     letter_dict = string.ascii_letters + string.digits + string.punctuation
-    safe_title = "".join(random.choice(letter_dict) for _ in range(20)) 
+    safe_title = "".join(random.choice(letter_dict) for _ in range(20))
 
     dpg.create_viewport(
         title=safe_title,

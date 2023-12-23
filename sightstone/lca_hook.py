@@ -1,15 +1,15 @@
 """Hook for league api HACK'ing"""
 
-import urllib3
+from collections import defaultdict
+from typing import DefaultDict
+sys.path.append("./") # Fixes unknown import when compiled from repo root
+from lib.background_thread import BackgroundThread
+from lib.windows_calls import execute_cmd_command
 import re
 import requests
 import sys
-from collections import defaultdict
-from typing import DefaultDict
+import urllib3
 from requests.models import Response
-sys.path.append("./") # Fixes unknown import when compiled from repo root 
-from lib.background_thread import BackgroundThread
-from lib.windows_calls import execute_cmd_command
 
 class LeagueConnection:
     """A hacked hook of `LCA`(League client api)
@@ -118,7 +118,7 @@ class LeagueConnection:
 
         # Process Output
         cmd_output = execute_cmd_command(self.CMD_HACK)
-        #cmd_output = remove_excessive_spaces(remove_newline_chars(cmd_output)) # TODO: Implement
+        #cmd_output = remove_excessive_spaces(remove_newline_chars(cmd_output))
         self.cmd_output_dict = self.parse_cmd_output(cmd_output)
         self.connected = cmd_output.startswith(self.LCA_CONNECTED_OUTPUT)
 
