@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.10"
 requests = "^2.31.0"
+dearpygui = "^1.10.1"
 
 [tool.poetry.dev-dependencies]
 
