@@ -8,6 +8,8 @@ from sightstone import Sightstone
 WIDTH = 500
 HEIGHT = 400
 
+INFO_LABEL_TEXT = "Sightstone by lipeeeee, "
+
 def init_gui(sightstone_hook: Sightstone):
     """Inits dearpygui window"""
     dpg.create_context()
@@ -17,17 +19,31 @@ def init_gui(sightstone_hook: Sightstone):
             width=WIDTH, height=HEIGHT,
             no_resize=True, no_title_bar=True, tag="p1"
         ):
+        #dpg.add_text("", tag="info")
+        dpg.add_text("", tag="info", pos=(10, HEIGHT - 75))
         with dpg.tab_bar():
-            with dpg.tab(label="Client"):
+            with dpg.tab(label="Game"):
+                pass
+            with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
                                callback=sightstone_hook.remove_challenges)
-            with dpg.tab(label="Queue"):
-                with dpg.table(header_row=False):
-                    dpg.add_table_column()
-        with dpg.colormap_registry(label="Colormap Registry", show=False):
-            dpg.add_colormap([[255, 255, 255, 255], [255, 255, 255, 255]], True, tag="white", label="white")
-        dpg.add_text("INFO TEXT", tag="info", pos=(WIDTH // 2 - 80, HEIGHT - 75))
-
+            with dpg.tab(label="Info"):
+                pass
+            with dpg.tab(label="Champs"):
+                pass
+            with dpg.tab(label="Skins"):
+                pass
+            with dpg.tab(label="Misc"):
+                pass
+            with dpg.tab(label="Custom"):
+                pass
+            with dpg.tab(label="Settings"):
+                pass
+            with dpg.tab(label="Test"):
+                dpg.add_button(label="gamemodes",
+                               callback=sightstone_hook.get_queues)
+                dpg.add_button(label="create arurf",
+                               callback=lambda:sightstone_hook.create_lobby("450"))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
@@ -44,7 +60,7 @@ def init_gui(sightstone_hook: Sightstone):
     while dpg.is_dearpygui_running():
         # Update necessary info for each frame
         connected_string = "CONNECTED TO CLIENT" if sightstone_hook.lca_hook.connected else "NOT CONNECTED TO CLIENT"
-        dpg.set_value("info", connected_string)
+        dpg.set_value("info", INFO_LABEL_TEXT + connected_string)
 
         dpg.render_dearpygui_frame()
     dpg.destroy_context()

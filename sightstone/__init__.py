@@ -4,7 +4,7 @@
 from .sightstone import Sightstone
 
 # league_api_hook.py
-#from .lca_hook import LeagueConnection
+from .lca_hook import LeagueConnection
 
 # gui.py
 from .gui import WIDTH, HEIGHT

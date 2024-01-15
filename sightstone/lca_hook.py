@@ -145,7 +145,7 @@ class LeagueConnection:
         if not self.connected:
             return None
 
-        return requests.get(self.build_url(path), auth=self.auth)
+        return requests.get(self.build_url(path), auth=self.auth, verify=False)
 
     def post(
         self, path: str, data: dict | None = None, json: dict | None = None
