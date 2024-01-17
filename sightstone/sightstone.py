@@ -37,12 +37,25 @@ class Sightstone:
     def create_lobby(self, id: str) -> bool:
         """Creates lobby given an ID"""
         response = self.lca_hook.post(
-            path="lol-lobby/v2/lobby",
+            path="lol-lobby/v2/lobby/",
             json={"queueId": id},
         )
         if response:
             print(response.json())
         return self.is_valid_response(response)
+
+    def set_positions(self, pos1: str, pos2: str) -> bool:
+        """Sets positions in lobby"""
+        response = self.lca_hook.put(
+            path="lol-lobby/v1/lobby/members/localMember/position-preferences/",
+            json={"firstPreference": pos1, "secondPreference": pos2}
+        )
+
+        return self.is_valid_response(response)
+
+    def create_lobby_with_positions(self, id: str, pos1: str, pos2: str) -> bool:
+        """Creates league lobby with set positions"""
+        return self.create_lobby(id) and self.set_positions(pos1, pos2)
 
     def is_valid_response(self, response: Response | None):
         """Checks if the response is valid"""

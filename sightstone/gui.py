@@ -44,6 +44,8 @@ def init_gui(sightstone_hook: Sightstone):
                                callback=sightstone_hook.get_queues)
                 dpg.add_button(label="create arurf",
                                callback=lambda:sightstone_hook.create_lobby("450"))
+                dpg.add_button(label="pos",
+                               callback=lambda:sightstone_hook.set_positions("1", "1"))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake

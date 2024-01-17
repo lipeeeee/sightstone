@@ -159,3 +159,16 @@ class LeagueConnection:
             data=data, json=json,
             auth=self.auth, verify=False
         )
+
+    def put(
+        self, path: str, data: dict | None = None, json: dict | None = None
+    ) -> Response | None:
+        """Put into LCA"""
+        if not self.connected:
+            return None
+
+        return requests.put(
+            self.build_url(path),
+            data=data, json=json,
+            auth=self.auth, verify=False
+        )
