@@ -6,6 +6,15 @@ from lca_hook import LeagueConnection
 class Sightstone:
     """Sightstone engine for league QOL hacking"""
 
+    """Role to int mapping for LCA put requests"""
+    ROLE_TO_INT_MAPPING = {
+        "JGL":  "1",
+        "TOP":  "2",
+        "MID":  "3",
+        "ADC":  "4",
+        "SUP":  "5",
+    }
+
     lca_hook: LeagueConnection
 
     def __init__(self) -> None:
@@ -25,13 +34,12 @@ class Sightstone:
         return self.is_valid_response(response)
 
     def get_queues(self) -> bool:
-        """."""
+        """Get all queues present in LCA"""
         response = self.lca_hook.get(
             path="lol-game-queues/v1/queues/"
         )
         if response:
             print(response.json())
-            exit(1)
         return self.is_valid_response(response)
     
     def create_lobby(self, id: str) -> bool:

@@ -45,7 +45,10 @@ def init_gui(sightstone_hook: Sightstone):
                 dpg.add_button(label="create arurf",
                                callback=lambda:sightstone_hook.create_lobby("450"))
                 dpg.add_button(label="pos",
-                               callback=lambda:sightstone_hook.set_positions("1", "1"))
+                               callback=lambda:sightstone_hook.set_positions(
+                               sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
+                               sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                dpg.add_combo(tag="pos1", items=list(sightstone_hook.ROLE_TO_INT_MAPPING.keys()), callback=lambda:print(dpg.get_value("pos1")))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
