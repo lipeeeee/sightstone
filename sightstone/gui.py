@@ -49,6 +49,7 @@ def init_gui(sightstone_hook: Sightstone):
                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
                 dpg.add_combo(tag="pos1", items=list(sightstone_hook.ROLE_TO_INT_MAPPING.keys()), callback=lambda:print(dpg.get_value("pos1")))
+                dpg.add_combo(tag="pos2", items=list(sightstone_hook.ROLE_TO_INT_MAPPING.keys()), callback=lambda:print(dpg.get_value("pos2")))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake

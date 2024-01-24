@@ -8,11 +8,13 @@ class Sightstone:
 
     """Role to int mapping for LCA put requests"""
     ROLE_TO_INT_MAPPING = {
+        "TOP":  "0",
         "JGL":  "1",
-        "TOP":  "2",
-        "MID":  "3",
-        "ADC":  "4",
-        "SUP":  "5",
+        "MID":  "2",
+        "ADC":  "3",
+        "SUP":  "4",
+        "FILL": "5",
+        "NONE": "6",
     }
 
     lca_hook: LeagueConnection
