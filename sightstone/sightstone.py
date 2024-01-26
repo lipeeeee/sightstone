@@ -15,6 +15,7 @@ class Sightstone:
         "SUP":  "4",
         "FILL": "5",
         "NONE": "6",
+        "":     "6",
     }
 
     lca_hook: LeagueConnection
