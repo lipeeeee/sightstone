@@ -45,11 +45,11 @@ class Sightstone:
             print(response.json())
         return self.is_valid_response(response)
     
-    def create_lobby(self, id: str) -> bool:
+    def create_lobby(self, id: str, custom: dict | None = None) -> bool:
         """Creates lobby given an ID"""
         response = self.lca_hook.post(
             path="lol-lobby/v2/lobby/",
-            json={"queueId": id},
+            json={"queueId": id} if not custom else custom,
         )
         if response:
             print(response.json())
