@@ -5,10 +5,11 @@ import random
 import dearpygui.dearpygui as dpg
 from sightstone import Sightstone
 
-WIDTH = 500
+WIDTH = 600
 HEIGHT = 400
 
 INFO_LABEL_TEXT = "Sightstone by lipeeeee, "
+IDENT_BUTTONS_GROUP_4 = WIDTH // 4
 
 def init_gui(sightstone_hook: Sightstone):
     """Inits dearpygui window"""
@@ -19,11 +20,46 @@ def init_gui(sightstone_hook: Sightstone):
             width=WIDTH, height=HEIGHT,
             no_resize=True, no_title_bar=True, tag="p1"
         ):
-        #dpg.add_text("", tag="info")
-        dpg.add_text("", tag="info", pos=(10, HEIGHT - 75))
+        #dpg.add_text("", tag="info", pos=(10, HEIGHT - 75))
+        dpg.add_text("", tag="info")
         with dpg.tab_bar():
             with dpg.tab(label="Game"):
-                pass
+                dpg.add_text("Create lobby")
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Quick Play",
+                                   callback=lambda:None)
+                    dpg.add_button(label="ARAM",
+                                   callback=lambda:None, indent=IDENT_BUTTONS_GROUP_4)
+                    dpg.add_button(label="TFT Normal",
+                                   callback=lambda:None, indent=IDENT_BUTTONS_GROUP_4 * 2)
+                    dpg.add_button(label="TFT Tutorial",
+                                   callback=lambda:None, indent=(IDENT_BUTTONS_GROUP_4 * 2) + IDENT_BUTTONS_GROUP_4)
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Draft Pick",
+                                   callback=lambda:None)
+                    dpg.add_button(label="ARURF",
+                                   callback=lambda:None, indent=IDENT_BUTTONS_GROUP_4)
+                    dpg.add_button(label="TFT Ranked",
+                                   callback=lambda:None, indent=IDENT_BUTTONS_GROUP_4 * 2)
+                    dpg.add_button(label="Practi. Tool",
+                                   callback=lambda:None, indent=(IDENT_BUTTONS_GROUP_4 * 2) + IDENT_BUTTONS_GROUP_4)
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Solo/Duo",
+                                   callback=lambda:None)
+                    dpg.add_button(label="Nexus Blitz",
+                                   callback=lambda:None, indent=IDENT_BUTTONS_GROUP_4)
+                    dpg.add_button(label="TFT Hyper Roll",
+                                   callback=lambda:None, indent=IDENT_BUTTONS_GROUP_4 * 2)
+                    dpg.add_button(label="Practi. Tool 5v5",
+                                   callback=lambda:None, indent=(IDENT_BUTTONS_GROUP_4 * 2) + IDENT_BUTTONS_GROUP_4)
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Flex",
+                                   callback=lambda:None)
+                    dpg.add_button(label="TFT Double Up",
+                                   callback=lambda:None, indent=IDENT_BUTTONS_GROUP_4 * 2)
+                    dpg.add_button(label="Clash",
+                                   callback=lambda:None, indent=(IDENT_BUTTONS_GROUP_4 * 2) + IDENT_BUTTONS_GROUP_4)
+
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
                                 callback=sightstone_hook.remove_challenges)
