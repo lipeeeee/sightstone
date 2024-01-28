@@ -2,6 +2,7 @@
 
 from requests import Response
 from lca_hook import LeagueConnection
+import sightstone_constants as SC
 
 class Sightstone:
     """Sightstone engine for league QOL hacking"""
@@ -63,6 +64,27 @@ class Sightstone:
         )
 
         return self.is_valid_response(response)
+
+    def custom_game_json(self, game_mode: str, team_size: int, map: int) -> dict:
+        """Returns the json for a custom game, given `gamemode`, `teamsize` and `map`"""
+        return {
+           "customGameLobby":{
+                "configuration":
+                    {
+                        "gameMode":game_mode,
+                        "gameMutator":"",
+                        "gameServerRegion":"",
+                        "mapId":map,
+                        "mutators":{"id":1},
+                        "spectatorPolicy":"AllAllowed",
+                        "teamSize":team_size
+                    },
+                    "lobbyName":SC.SIGHTSTONE,
+                    "lobbyPassword":None
+            },
+            "isCustom":True
+        }
+
 
     def create_lobby_with_positions(self, id: str, pos1: str, pos2: str) -> bool:
         """Creates league lobby with set positions"""

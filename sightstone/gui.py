@@ -25,7 +25,6 @@ def init_gui(sightstone_hook: Sightstone):
         dpg.add_text("", tag="info")
         with dpg.tab_bar():
             with dpg.tab(label="Game"):
-                dpg.add_text("Create lobby")
                 with dpg.group(horizontal=True):
                     dpg.add_button(label="Quick Play",
                                     callback=lambda:sightstone_hook.create_lobby(SC.QUICK_PLAY_ID))
@@ -48,7 +47,7 @@ def init_gui(sightstone_hook: Sightstone):
                                     callback=lambda:sightstone_hook.create_lobby(SC.TFT_RANKED_ID),
                                     indent=IDENT_BUTTONS_GROUP_4 * 2)
                     dpg.add_button(label="Practi. Tool",
-                                    callback=lambda:sightstone_hook.create_lobby("0", custom=SC.PRACT_TOOL_JSON),
+                                    callback=lambda:sightstone_hook.create_lobby("0", custom=sightstone_hook.custom_game_json(SC.PRACTICE_TOOL_MODE, 1, SC.SUMMONERS_RIFT_ID)),
                                     indent=(IDENT_BUTTONS_GROUP_4 * 2) + IDENT_BUTTONS_GROUP_4)
                 with dpg.group(horizontal=True):
                     dpg.add_button(label="Solo/Duo",
@@ -60,7 +59,7 @@ def init_gui(sightstone_hook: Sightstone):
                                     callback=lambda:sightstone_hook.create_lobby(SC.TFT_HYPERROLL_ID),
                                     indent=IDENT_BUTTONS_GROUP_4 * 2)
                     dpg.add_button(label="Practi. Tool 5v5",
-                                    callback=lambda:sightstone_hook.create_lobby("0", custom=SC.PRACT_TOOL_5V5_JSON),
+                                    callback=lambda:sightstone_hook.create_lobby("0", custom=sightstone_hook.custom_game_json(SC.PRACTICE_TOOL_MODE, 5, SC.SUMMONERS_RIFT_ID)),
                                     indent=(IDENT_BUTTONS_GROUP_4 * 2) + IDENT_BUTTONS_GROUP_4)
                 with dpg.group(horizontal=True):
                     dpg.add_button(label="Flex",
@@ -74,6 +73,32 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(label="Clash",
                                     callback=lambda:sightstone_hook.create_lobby(SC.CLASH_ID),
                                     indent=(IDENT_BUTTONS_GROUP_4 * 2) + IDENT_BUTTONS_GROUP_4)
+                dpg.add_separator()
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Tutorial 1",
+                                    callback=lambda:sightstone_hook.create_lobby(SC.TUTORIAL_1_ID))
+                    dpg.add_button(label="Intro Bots",
+                                    callback=lambda:sightstone_hook.create_lobby(SC.INTRO_ID),
+                                    indent=IDENT_BUTTONS_GROUP_4)
+                    dpg.add_button(label="Custom Blind",
+                                    callback=lambda:sightstone_hook.create_lobby("0", custom=sightstone_hook.custom_game_json(SC.CLASSIC_MODE, 5, SC.SUMMONERS_RIFT_ID)),
+                                    indent=IDENT_BUTTONS_GROUP_4 * 2)
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Tutorial 2",
+                                    callback=lambda:sightstone_hook.create_lobby(SC.TUTORIAL_2_ID))
+                    dpg.add_button(label="Begginer Bots",
+                                    callback=lambda:sightstone_hook.create_lobby(SC.BEGGINER_ID),
+                                    indent=IDENT_BUTTONS_GROUP_4)
+                    dpg.add_button(label="Custom ARAM",
+                                    callback=lambda:sightstone_hook.create_lobby("0", custom=sightstone_hook.custom_game_json(SC.CLASSIC_MODE, 5, SC.HOWLING_ABYSS_ID)),
+                                    indent=IDENT_BUTTONS_GROUP_4 * 2)
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Tutorial 3",
+                                    callback=lambda:sightstone_hook.create_lobby(SC.TUTORIAL_3_ID))
+                    dpg.add_button(label="Intermediate Bots",
+                                    callback=lambda:sightstone_hook.create_lobby(SC.INTERMEDIATE_ID),
+                                    indent=IDENT_BUTTONS_GROUP_4)
+                dpg.add_separator()
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
                                 callback=sightstone_hook.remove_challenges)
