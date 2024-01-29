@@ -40,8 +40,7 @@ class Sightstone:
             path="lol-lobby/v2/lobby/",
             json={"queueId": id} if not custom else custom,
         )
-        if response:
-            print(response.json())
+
         return self.is_valid_response(response)
 
     def set_positions(self, pos1: str, pos2: str) -> bool:
@@ -80,6 +79,13 @@ class Sightstone:
 
     def get_current_user(self):
         """Get current client user"""
+        response = self.lca_hook.get(
+            path="lol-summoner/v1/current-summoner/",
+        )
+        
+        if response and self.is_valid_response(response):
+            return response.json()["gameName"] + "#" + response.json()["tagLine"]
+
         return None
 
     def create_lobby_with_positions(self, id: str, pos1: str, pos2: str) -> bool:

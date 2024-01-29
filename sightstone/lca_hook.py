@@ -144,8 +144,10 @@ class LeagueConnection:
         """Get request"""
         if not self.connected:
             return None
-
-        return requests.get(self.build_url(path), auth=self.auth, verify=False)
+        try:
+            return requests.get(self.build_url(path), auth=self.auth, verify=False)
+        except:
+            return None
 
     def post(
         self, path: str, data: dict | None = None, json: dict | None = None
@@ -153,12 +155,15 @@ class LeagueConnection:
         """Post into LCA"""
         if not self.connected:
             return None
-
-        return requests.post(
-            self.build_url(path),
-            data=data, json=json,
-            auth=self.auth, verify=False
-        )
+        
+        try:
+            return requests.post(
+                self.build_url(path),
+                data=data, json=json,
+                auth=self.auth, verify=False
+            )
+        except:
+            return None
 
     def put(
         self, path: str, data: dict | None = None, json: dict | None = None
@@ -166,9 +171,12 @@ class LeagueConnection:
         """Put into LCA"""
         if not self.connected:
             return None
-
-        return requests.put(
-            self.build_url(path),
-            data=data, json=json,
-            auth=self.auth, verify=False
-        )
+        
+        try:
+            return requests.put(
+                self.build_url(path),
+                data=data, json=json,
+                auth=self.auth, verify=False
+            )
+        except:
+            return None
