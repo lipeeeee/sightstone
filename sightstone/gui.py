@@ -30,6 +30,7 @@ def info_label(sightstone_hook: Sightstone):
     info += " | Connected to: " + str(sightstone_hook.get_current_user()) # User info
     return info
 
+# pylint: disable=R0915
 def init_gui(sightstone_hook: Sightstone):
     """Inits dearpygui window"""
     dpg.create_context()
@@ -138,17 +139,17 @@ def init_gui(sightstone_hook: Sightstone):
                                 callback=lambda:sightstone_hook.create_lobby("450"))
                 dpg.add_button(label="pos",
                                 callback=lambda:sightstone_hook.set_positions(
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
-                dpg.add_combo(tag="pos1", 
+                dpg.add_combo(tag="pos1",
                                 items=list(ROLE_TO_INT_MAPPING.keys()),
                                 callback=lambda:sightstone_hook.set_positions(
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
-                dpg.add_combo(tag="pos2", 
+                dpg.add_combo(tag="pos2",
                                 items=list(ROLE_TO_INT_MAPPING.keys()),
                                 callback=lambda:sightstone_hook.set_positions(
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
     dpg.set_primary_window("p1", True)
 

@@ -1,15 +1,16 @@
 """Hook for league api HACK'ing"""
 
 import sys
-sys.path.append("./") # Fixes unknown import when compiled from repo root
-from lib.background_thread import BackgroundThread
-from lib.windows_calls import execute_cmd_command
 import re
 import requests
 import urllib3
 from requests.models import Response
 from collections import defaultdict
 from typing import DefaultDict
+
+sys.path.append("./") # Fixes unknown import when compiled from repo root
+from lib.background_thread import BackgroundThread
+from lib.windows_calls import execute_cmd_command
 
 class LeagueConnection:
     """A hacked hook of `LCA`(League client api)
@@ -144,9 +145,10 @@ class LeagueConnection:
         """Get request"""
         if not self.connected:
             return None
+
         try:
             return requests.get(self.build_url(path), auth=self.auth, verify=False)
-        except:
+        except Exception:
             return None
 
     def post(
@@ -155,14 +157,14 @@ class LeagueConnection:
         """Post into LCA"""
         if not self.connected:
             return None
-        
+
         try:
             return requests.post(
                 self.build_url(path),
                 data=data, json=json,
                 auth=self.auth, verify=False
             )
-        except:
+        except Exception:
             return None
 
     def put(
@@ -171,12 +173,12 @@ class LeagueConnection:
         """Put into LCA"""
         if not self.connected:
             return None
-        
+
         try:
             return requests.put(
                 self.build_url(path),
                 data=data, json=json,
                 auth=self.auth, verify=False
             )
-        except:
+        except Exception:
             return None
