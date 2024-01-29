@@ -1,23 +1,11 @@
 # Main cheat engine
 
-from requests import Response
+import requests
 from lca_hook import LeagueConnection
 import sightstone_constants as SC
 
 class Sightstone:
     """Sightstone engine for league QOL hacking"""
-
-    """Role to int mapping for LCA put requests"""
-    ROLE_TO_INT_MAPPING = {
-        "TOP":  "0",
-        "JGL":  "1",
-        "MID":  "2",
-        "ADC":  "3",
-        "SUP":  "4",
-        "FILL": "5",
-        "NONE": "6",
-        "":     "6",
-    }
 
     lca_hook: LeagueConnection
 
@@ -85,12 +73,20 @@ class Sightstone:
             "isCustom":True
         }
 
+    def get_current_patch(self):
+        """Get current patch"""
+        response = requests.get("https://ddragon.leagueoflegends.com/api/versions.json")
+        return response.json()[0]
+
+    def get_current_user(self):
+        """Get current client user"""
+        return None
 
     def create_lobby_with_positions(self, id: str, pos1: str, pos2: str) -> bool:
         """Creates league lobby with set positions"""
         return self.create_lobby(id) and self.set_positions(pos1, pos2)
 
-    def is_valid_response(self, response: Response | None):
+    def is_valid_response(self, response: requests.Response | None):
         """Checks if the response is valid"""
         return not (response is None or response.status_code in (204, 500))
 

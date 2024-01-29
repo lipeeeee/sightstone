@@ -9,8 +9,26 @@ from sightstone import Sightstone
 WIDTH = 600
 HEIGHT = 400
 
-INFO_LABEL_TEXT = SC.SIGHTSTONE + " by lipeeeee, "
 IDENT_BUTTONS_GROUP_4 = WIDTH // 4
+
+"""Role to int mapping for sightstone put requests"""
+ROLE_TO_INT_MAPPING = {
+    "TOP":  "0",
+    "JGL":  "1",
+    "MID":  "2",
+    "ADC":  "3",
+    "SUP":  "4",
+    "FILL": "5",
+    "NONE": "6",
+    "":     "6",
+}
+
+def info_label(sightstone_hook: Sightstone):
+    """Returns info label(top label) with sightstone info"""
+    info = SC.SIGHTSTONE + " by lipeeeee" # General info
+    info += " - " + sightstone_hook.get_current_patch() # Patch info
+    info += " | Connected to: " + str(sightstone_hook.get_current_user()) # User info
+    return info
 
 def init_gui(sightstone_hook: Sightstone):
     """Inits dearpygui window"""
@@ -21,7 +39,6 @@ def init_gui(sightstone_hook: Sightstone):
             width=WIDTH, height=HEIGHT,
             no_resize=True, no_title_bar=True, tag="p1"
         ):
-        #dpg.add_text("", tag="info", pos=(10, HEIGHT - 75))
         dpg.add_text("", tag="info")
         with dpg.tab_bar():
             with dpg.tab(label="Game"):
@@ -121,18 +138,18 @@ def init_gui(sightstone_hook: Sightstone):
                                 callback=lambda:sightstone_hook.create_lobby("450"))
                 dpg.add_button(label="pos",
                                 callback=lambda:sightstone_hook.set_positions(
-                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
-                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
                 dpg.add_combo(tag="pos1", 
-                                items=list(sightstone_hook.ROLE_TO_INT_MAPPING.keys()),
+                                items=list(ROLE_TO_INT_MAPPING.keys()),
                                 callback=lambda:sightstone_hook.set_positions(
-                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
-                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
                 dpg.add_combo(tag="pos2", 
-                                items=list(sightstone_hook.ROLE_TO_INT_MAPPING.keys()),
+                                items=list(ROLE_TO_INT_MAPPING.keys()),
                                 callback=lambda:sightstone_hook.set_positions(
-                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
-                                sightstone_hook.ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")], 
+                                ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
@@ -148,8 +165,7 @@ def init_gui(sightstone_hook: Sightstone):
     dpg.setup_dearpygui()
     while dpg.is_dearpygui_running():
         # Update necessary info for each frame
-        connected_string = "CONNECTED TO CLIENT" if sightstone_hook.lca_hook.connected else "NOT CONNECTED TO CLIENT"
-        dpg.set_value("info", INFO_LABEL_TEXT + connected_string)
+        dpg.set_value("info", info_label(sightstone_hook))
 
         dpg.render_dearpygui_frame()
     dpg.destroy_context()
