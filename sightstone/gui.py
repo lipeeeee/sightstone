@@ -20,18 +20,6 @@ ROLE_TO_INT_MAPPING = {
     "SUP":  "4",
     "FILL": "5",
     "NONE": "6",
-    "":     "6",
-}
-
-"""Difficulty to int mapping"""
-DIFFICULTY_TO_INT_MAPPING = {
-    "NONE":     "0",
-    "EASY":     "1",
-    "MEDIUM":   "2",
-    "HARD":     "3",
-    "UBER":     "4",
-    "TUTORIAL": "5",
-    "INTRO":    "6",
 }
 
 def info_label(sightstone_hook: Sightstone):
@@ -146,8 +134,16 @@ def init_gui(sightstone_hook: Sightstone):
 
                 dpg.add_separator()
                 with dpg.group(horizontal=True):
-                    ...
-
+                    role_to_int_str_list = list(ROLE_TO_INT_MAPPING.keys())
+                    dpg.add_combo(tag="pos1", items=role_to_int_str_list, 
+                                  default_value=role_to_int_str_list[0], width=100)
+                    dpg.add_combo(tag="pos2", items=role_to_int_str_list,
+                                  default_value=role_to_int_str_list[1], width=100)
+                    dpg.add_button(label="Pick Roles",
+                                    callback=lambda:sightstone_hook.set_positions(
+                                    ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
+                                    ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                dpg.add_separator()
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
                                 callback=sightstone_hook.remove_challenges)
@@ -169,16 +165,6 @@ def init_gui(sightstone_hook: Sightstone):
                 dpg.add_button(label="create arurf",
                                 callback=lambda:sightstone_hook.create_lobby("450"))
                 dpg.add_button(label="pos",
-                                callback=lambda:sightstone_hook.set_positions(
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
-                dpg.add_combo(tag="pos1",
-                                items=list(ROLE_TO_INT_MAPPING.keys()),
-                                callback=lambda:sightstone_hook.set_positions(
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
-                dpg.add_combo(tag="pos2",
-                                items=list(ROLE_TO_INT_MAPPING.keys()),
                                 callback=lambda:sightstone_hook.set_positions(
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
