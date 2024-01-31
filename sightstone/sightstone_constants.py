@@ -5,6 +5,10 @@ SIGHTSTONE = "Sightstone"
 # Map IDS
 SUMMONERS_RIFT_ID   = 11
 HOWLING_ABYSS_ID    = 12
+STR_TO_MAP          = {
+    "Summoner's rift": SUMMONERS_RIFT_ID,
+    "Howling Abyss": HOWLING_ABYSS_ID
+}
 
 # Gamemodes
 PRACTICE_TOOL_MODE  = "PRACTICETOOL"
