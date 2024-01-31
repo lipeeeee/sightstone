@@ -52,25 +52,20 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
-    def custom_game_json(self, game_mode: str, team_size: int, map_code: int) -> dict:
-        """Returns the json for a custom game, given `gamemode`, `teamsize` and `map`"""
-        return {
-           "customGameLobby":{
-                "configuration":
-                    {
-                        "gameMode":game_mode,
-                        "gameMutator":"",
-                        "gameServerRegion":"",
-                        "mapId":map_code,
-                        "mutators":{"id":1},
-                        "spectatorPolicy":"AllAllowed",
-                        "teamSize":team_size
-                    },
-                    "lobbyName":SC.SIGHTSTONE,
-                    "lobbyPassword":None
-            },
-            "isCustom":True
-        }
+    def get_available_bots(self):
+        """Gets available bots"""
+        response = self.lca_hook.get(path="lol-lobby/v2/lobby/custom/available-bots/")
+        if response:
+            return response.json()
+
+    def add_bot(self, bot_difficulty: str, team: str, champion_id: str):
+        """Send request to add bot"""
+        response = self.lca_hook.post(
+            path="lol-lobby/v1/lobby/custom/bots/",
+            json={"botDifficulty": bot_difficulty, "championId": champion_id, "teamId": team},
+        )
+
+        return self.is_valid_response(response)
 
     def get_current_patch(self):
         """Get current patch"""
@@ -92,6 +87,25 @@ class Sightstone:
         """Creates league lobby with set positions"""
         return self.create_lobby(lobby_id) and self.set_positions(pos1, pos2)
 
+    def custom_game_json(self, game_mode: str, team_size: int, map_code: int) -> dict:
+        """Returns the json for a custom game, given `gamemode`, `teamsize` and `map`"""
+        return {
+           "customGameLobby":{
+                "configuration":
+                    {
+                        "gameMode":game_mode,
+                        "gameMutator":"",
+                        "gameServerRegion":"",
+                        "mapId":map_code,
+                        "mutators":{"id":1},
+                        "spectatorPolicy":"AllAllowed",
+                        "teamSize":team_size
+                    },
+                    "lobbyName":SC.SIGHTSTONE,
+                    "lobbyPassword":None
+            },
+            "isCustom":True
+        }
     def is_valid_response(self, response: requests.Response | None):
         """Checks if the response is valid"""
         return not (response is None or response.status_code in (204, 500))
