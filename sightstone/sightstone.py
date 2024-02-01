@@ -58,6 +58,12 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
+    def start_queue(self) -> bool:
+        """Start queue"""
+        response = self.lca_hook.post(path="lol-lobby/v2/lobby/matchmaking/search/")
+
+        return self.is_valid_response(response)
+
     def get_available_bots(self):
         """Gets available bots"""
         response = self.lca_hook.get(path="lol-lobby/v2/lobby/custom/available-bots/")

@@ -135,14 +135,18 @@ def init_gui(sightstone_hook: Sightstone):
                 dpg.add_separator()
                 with dpg.group(horizontal=True):
                     role_to_int_str_list = list(ROLE_TO_INT_MAPPING.keys())
+                    callback_set_roles = lambda:sightstone_hook.set_positions(
+                        ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
+                        ROLE_TO_INT_MAPPING[dpg.get_value("pos2")],
+                    )
+                    dpg.add_button(label="Start Queue", callback=sightstone_hook.start_queue)
                     dpg.add_combo(tag="pos1", items=role_to_int_str_list, 
-                                  default_value=role_to_int_str_list[0], width=100)
+                                  default_value=role_to_int_str_list[0], width=115, callback=callback_set_roles, indent=INDENT_BUTTONS_GROUP_4)
                     dpg.add_combo(tag="pos2", items=role_to_int_str_list,
-                                  default_value=role_to_int_str_list[1], width=100)
-                    dpg.add_button(label="Pick Roles",
-                                    callback=lambda:sightstone_hook.set_positions(
-                                    ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
-                                    ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                                  default_value=role_to_int_str_list[1], width=115, callback=callback_set_roles)
+                    dpg.add_button(label="Dodge",
+                                    callback=sightstone_hook.dodge_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
+
                 dpg.add_separator()
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
