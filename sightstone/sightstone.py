@@ -52,13 +52,19 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
+    def dodge_lobby(self) -> bool:
+        """Dodges current lobby"""
+        response = self.lca_hook.post(path="lol-lobby/v1/lobby/custom/cancel-champ-select/")
+
+        return self.is_valid_response(response)
+
     def get_available_bots(self):
         """Gets available bots"""
         response = self.lca_hook.get(path="lol-lobby/v2/lobby/custom/available-bots/")
         if response:
             return response.json()
 
-    def add_bot(self, bot_difficulty: str, team: str, champion_id: str):
+    def add_bot(self, bot_difficulty: str, team: str, champion_id: str) -> bool:
         """Send request to add bot"""
         response = self.lca_hook.post(
             path="lol-lobby/v1/lobby/custom/bots/",
@@ -67,7 +73,7 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
-    def get_current_patch(self):
+    def get_current_patch(self) -> str:
         """Get current patch"""
         response = requests.get("https://ddragon.leagueoflegends.com/api/versions.json")
         return response.json()[0]

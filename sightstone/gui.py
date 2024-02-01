@@ -168,6 +168,8 @@ def init_gui(sightstone_hook: Sightstone):
                                 callback=lambda:sightstone_hook.set_positions(
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                dpg.add_button(label="dodge",
+                               callback=sightstone_hook.dodge_lobby)
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
