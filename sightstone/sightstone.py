@@ -64,6 +64,12 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
+    def delete_lobby(self) -> bool:
+        """Deletes lobby"""
+        response = self.lca_hook.delete(path="lol-lobby/v2/lobby/")
+        
+        return self.is_valid_response(response)
+
     def get_available_bots(self):
         """Gets available bots"""
         response = self.lca_hook.get(path="lol-lobby/v2/lobby/custom/available-bots/")

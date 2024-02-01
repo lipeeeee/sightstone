@@ -53,8 +53,8 @@ def init_gui(sightstone_hook: Sightstone):
                                   default_value=role_to_int_str_list[0], width=115, callback=callback_set_roles, indent=INDENT_BUTTONS_GROUP_4)
                     dpg.add_combo(tag="pos2", items=role_to_int_str_list,
                                   default_value=role_to_int_str_list[1], width=115, callback=callback_set_roles)
-                    dpg.add_button(label="Dodge",
-                                    callback=sightstone_hook.dodge_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
+                    dpg.add_button(label="Delete Lobby",
+                                    callback=sightstone_hook.delete_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
                 dpg.add_separator()
 
                 with dpg.group(horizontal=True):
@@ -146,8 +146,7 @@ def init_gui(sightstone_hook: Sightstone):
                                     callback=lambda:sightstone_hook.create_lobby("0", 
                                                     custom=sightstone_hook.custom_game_json(SC.CLASSIC_MODE, dpg.get_value("create_teamCount"), SC.STR_TO_MAP[dpg.get_value("create_mapId")])),
                                     indent=INDENT_BUTTONS_GROUP_4 * 3)
-
-
+                dpg.add_separator()
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
                                 callback=sightstone_hook.remove_challenges)
