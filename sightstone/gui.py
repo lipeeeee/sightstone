@@ -43,6 +43,21 @@ def init_gui(sightstone_hook: Sightstone):
         with dpg.tab_bar():
             with dpg.tab(label="Game"):
                 with dpg.group(horizontal=True):
+                    role_to_int_str_list = list(ROLE_TO_INT_MAPPING.keys())
+                    callback_set_roles = lambda:sightstone_hook.set_positions(
+                        ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
+                        ROLE_TO_INT_MAPPING[dpg.get_value("pos2")],
+                    )
+                    dpg.add_button(label="Start Queue", callback=sightstone_hook.start_queue)
+                    dpg.add_combo(tag="pos1", items=role_to_int_str_list, 
+                                  default_value=role_to_int_str_list[0], width=115, callback=callback_set_roles, indent=INDENT_BUTTONS_GROUP_4)
+                    dpg.add_combo(tag="pos2", items=role_to_int_str_list,
+                                  default_value=role_to_int_str_list[1], width=115, callback=callback_set_roles)
+                    dpg.add_button(label="Dodge",
+                                    callback=sightstone_hook.dodge_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
+                dpg.add_separator()
+
+                with dpg.group(horizontal=True):
                     dpg.add_button(label="Quick Play",
                                     callback=lambda:sightstone_hook.create_lobby(SC.QUICK_PLAY_ID))
                     dpg.add_button(label="ARAM",
@@ -132,22 +147,7 @@ def init_gui(sightstone_hook: Sightstone):
                                                     custom=sightstone_hook.custom_game_json(SC.CLASSIC_MODE, dpg.get_value("create_teamCount"), SC.STR_TO_MAP[dpg.get_value("create_mapId")])),
                                     indent=INDENT_BUTTONS_GROUP_4 * 3)
 
-                dpg.add_separator()
-                with dpg.group(horizontal=True):
-                    role_to_int_str_list = list(ROLE_TO_INT_MAPPING.keys())
-                    callback_set_roles = lambda:sightstone_hook.set_positions(
-                        ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
-                        ROLE_TO_INT_MAPPING[dpg.get_value("pos2")],
-                    )
-                    dpg.add_button(label="Start Queue", callback=sightstone_hook.start_queue)
-                    dpg.add_combo(tag="pos1", items=role_to_int_str_list, 
-                                  default_value=role_to_int_str_list[0], width=115, callback=callback_set_roles, indent=INDENT_BUTTONS_GROUP_4)
-                    dpg.add_combo(tag="pos2", items=role_to_int_str_list,
-                                  default_value=role_to_int_str_list[1], width=115, callback=callback_set_roles)
-                    dpg.add_button(label="Dodge",
-                                    callback=sightstone_hook.dodge_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
 
-                dpg.add_separator()
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
                                 callback=sightstone_hook.remove_challenges)

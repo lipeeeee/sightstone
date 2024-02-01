@@ -51,6 +51,8 @@ class LeagueConnection:
     Methods:
         get(path: str) -> Response
         post(path: str, data: dict, json: dict) -> Response
+        put(path: str, data: dict, json: dict) -> Response
+        delete(path: str, data: dict, json: dict) -> Response
 
     Data:
     Example request:
@@ -151,9 +153,7 @@ class LeagueConnection:
         except Exception:
             return None
 
-    def post(
-        self, path: str, data: dict | None = None, json: dict | None = None
-    ) -> Response | None:
+    def post(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:
         """Post into LCA"""
         if not self.connected:
             return None
@@ -167,9 +167,7 @@ class LeagueConnection:
         except Exception:
             return None
 
-    def put(
-        self, path: str, data: dict | None = None, json: dict | None = None
-    ) -> Response | None:
+    def put(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:
         """Put into LCA"""
         if not self.connected:
             return None
@@ -180,5 +178,18 @@ class LeagueConnection:
                 data=data, json=json,
                 auth=self.auth, verify=False
             )
+        except Exception:
+            return None
+
+    def delete(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:
+        """Delete to LCA"""
+        if not self.connected:
+            return None
+
+        try:
+            return requests.delete(
+                self.build_url(path),
+                data=data, json=json,
+                auth=self.auth, verify=False)
         except Exception:
             return None
