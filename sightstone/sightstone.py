@@ -2,15 +2,24 @@
 
 import requests
 from lca_hook import LeagueConnection
+from lib.background_thread import BackgroundThread
 import sightstone_constants as SC
 
 class Sightstone:
     """Sightstone engine for league QOL hacking"""
 
+    QUEUE_FOUND = "Found"
+    AUTO_ACCEPT_QUEUE_TIMEOUT = 7
+
     lca_hook: LeagueConnection
+    accept_listener: BackgroundThread # Auto queue accept listener
 
     def __init__(self) -> None:
         self.lca_hook = LeagueConnection()
+        self.accept_listener = BackgroundThread(
+            fn_to_run=self.queue_accept, time_between_runs=self.AUTO_ACCEPT_QUEUE_TIMEOUT, daemon=True
+        )
+        self.__accept_listener_running = False
 
     def remove_challenges(self) -> bool:
         """Remove League Challenges
@@ -69,6 +78,25 @@ class Sightstone:
         response = self.lca_hook.delete(path="lol-lobby/v2/lobby/")
         
         return self.is_valid_response(response)
+
+    def toggle_accept_listener(self):
+        """Toggles the auto accept thread"""
+        # Start thread if first time
+        if not self.accept_listener.started:
+            self.accept_listener.start()
+            self.__accept_listener_running = True
+        # If it is not first time we just toggle
+        else:
+            self.__accept_listener_running = not self.__accept_listener_running 
+
+    def queue_accept(self):
+        """Accept queue if Found"""
+        if not self.__accept_listener_running:
+            return
+        response = self.lca_hook.get(path="lol-lobby/v2/lobby/matchmaking/search-state/")
+        if response and response.json()["searchState"] == self.QUEUE_FOUND:
+            print("FOUND QUEUE ACCEPT POP")
+            self.lca_hook.post(path="lol-matchmaking/v1/ready-check/accept/")
 
     def get_available_bots(self):
         """Gets available bots"""

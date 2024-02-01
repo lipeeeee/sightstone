@@ -17,11 +17,14 @@ class BackgroundThread(Thread):
         `fn_to_run` should be ran
 
         running (bool): Flag of if the thread is being ran
+        
+        started (bool): Flag of if the thread was ever started
     """
 
     fn_to_run: Callable
     time_between_runs: int
     running: bool
+    started: bool
 
     # pylint: disable=R0913
     def __init__(
@@ -40,15 +43,18 @@ class BackgroundThread(Thread):
         self.fn_to_run = fn_to_run
         self.time_between_runs = time_between_runs
         self.running = False
+        self.started = False
 
     def start(self) -> None:
         """Start running thread"""
         self.running = True
-        return super().start()
+        self.started = True
+        super().start()
 
     def run(self) -> None:
         """Main thread execution"""
         while self.running:
+            print(f"RAN: {self.fn_to_run} with timeout: {self.time_between_runs}")
             self.fn_to_run()
             sleep(self.time_between_runs)
 

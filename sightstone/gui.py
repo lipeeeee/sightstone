@@ -147,6 +147,8 @@ def init_gui(sightstone_hook: Sightstone):
                                                     custom=sightstone_hook.custom_game_json(SC.CLASSIC_MODE, dpg.get_value("create_teamCount"), SC.STR_TO_MAP[dpg.get_value("create_mapId")])),
                                     indent=INDENT_BUTTONS_GROUP_4 * 3)
                 dpg.add_separator()
+                with dpg.group(horizontal=True):
+                    dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener)
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
                                 callback=sightstone_hook.remove_challenges)

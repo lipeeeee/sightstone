@@ -73,6 +73,7 @@ class LeagueConnection:
     CMD_HACK = "WMIC PROCESS WHERE name='LeagueClientUx.exe' GET commandline"
     CMD_DICT_DEFAULT_VAL = "LCA_NOT_FOUND_VALUE"
     LISTEN_TIMEOUT = 2
+    SLOW_LISTEN_TIMEOUT = 15
 
     def __init__(self) -> None:
         self.cmd_output_dict: DefaultDict = defaultdict(lambda: self.CMD_DICT_DEFAULT_VAL)
@@ -117,16 +118,16 @@ class LeagueConnection:
 
             self.connected (bool): the status of connection
         """
-        print("Listening to `LCA`...")
-
         # Process Output
         cmd_output = execute_cmd_command(self.CMD_HACK)
-        #cmd_output = remove_excessive_spaces(remove_newline_chars(cmd_output))
         self.cmd_output_dict = self.parse_cmd_output(cmd_output)
         self.connected = cmd_output.startswith(self.LCA_CONNECTED_OUTPUT)
-
-        print(f"CMD_OUTPUT_DICT: {self.cmd_output_dict}")
-        print(f"RAT: {self.remoting_auth_token}")
+        
+        # Slow down requests if we are connected
+        if self.connected:
+            self.listener.time_between_runs = self.SLOW_LISTEN_TIMEOUT
+        else:
+            self.listener.time_between_runs = self.LISTEN_TIMEOUT
 
     def parse_cmd_output(self, output: str) -> DefaultDict:
         """Parses cmd output to a dictionary"""
