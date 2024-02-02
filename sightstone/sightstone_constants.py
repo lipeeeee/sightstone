@@ -38,3 +38,12 @@ TFT_RANKED_ID       = "1100"
 TFT_TUTORIAL_ID     = "1110"
 TFT_DOUBLE_UP_ID    = "1160"
 TFT_HYPERROLL_ID    = "1130"
+
+# Roles
+TOP_ID      = "0"
+JGL_ID      = "1"
+MID_ID      = "2"
+ADC_ID      = "3"
+SUP_ID      = "4"
+FILL_ID     = "5"
+NONE_ID     = "6"

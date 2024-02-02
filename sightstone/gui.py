@@ -13,13 +13,13 @@ INDENT_BUTTONS_GROUP_4 = WIDTH // 4
 
 """Role to int mapping"""
 ROLE_TO_INT_MAPPING = {
-    "TOP":  "0",
-    "JGL":  "1",
-    "MID":  "2",
-    "ADC":  "3",
-    "SUP":  "4",
-    "FILL": "5",
-    "NONE": "6",
+    "TOP":  SC.TOP_ID,
+    "JGL":  SC.JGL_ID,
+    "MID":  SC.MID_ID,
+    "ADC":  SC.ADC_ID,
+    "SUP":  SC.SUP_ID,
+    "FILL": SC.FILL_ID,
+    "NONE": SC.NONE_ID,
 }
 
 """Multi-Search available websites"""
