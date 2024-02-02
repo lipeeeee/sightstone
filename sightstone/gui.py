@@ -23,7 +23,7 @@ ROLE_TO_INT_MAPPING = {
 }
 
 """Multi-Search available websites"""
-REVEAL_LOBBY_WEBSITES = ["OP.GG", "U.GG", "PORO.GG", "Porofessor.gg"]
+REVEAL_LOBBY_WEBSITES = [SC.OP_GG, SC.U_GG, SC.PORO_GG, SC.POROFESSOR_GG]
 
 def info_label(sightstone_hook: Sightstone):
     """Returns info label(top label) with sightstone info"""

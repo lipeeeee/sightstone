@@ -47,3 +47,9 @@ ADC_ID      = "3"
 SUP_ID      = "4"
 FILL_ID     = "5"
 NONE_ID     = "6"
+
+# Reveal lobby available websites
+OP_GG           = "OP.GG"
+U_GG            = "U.GG"
+PORO_GG         = "PORO.GG"
+POROFESSOR_GG   = "Porofessor.gg"
