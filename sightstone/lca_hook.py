@@ -5,6 +5,7 @@ import re
 import requests
 import urllib3
 from requests.models import Response
+from win32api import GetFileVersionInfo, LOWORD, HIWORD
 from collections import defaultdict
 from typing import DefaultDict
 
@@ -141,6 +142,19 @@ class LeagueConnection:
         """Riot auth tuple"""
         return (self.username, self.riot_token)
 
+    @property
+    def league_version(self) -> tuple[int, int, int, int] | None:
+        """Get's league executable file version"""
+        if not self.connected:
+            return None
+        try:
+            info = GetFileVersionInfo(f"{self.install_dir} Games\\League of Legends\\{self.app_name}.exe", "\\")
+            ms = info["FileVersionMS"]
+            ls = info["FileVersionLS"]
+            return HIWORD(ms), LOWORD(ms), HIWORD(ls), LOWORD(ls)
+        except Exception as e:
+            print(f"ERROR: COULD NOT GET LEAGUE VERSION: {e}")
+
     def build_url(self, path: str) -> str:
         """Build request url"""
         return f"{self.protocol}://{self.base_url}:{self.port}/{path}"
@@ -164,6 +178,7 @@ class LeagueConnection:
             print(f"RIOT-PORT: {self.riot_port}")
             print(f"INSTALL-DIR: {self.install_dir}")
             print(f"LEAGUE-EXE: {self.app_name}")
+            print(f"FILEINFO: {self.league_version}")
             print("--------")
         
         # Slow down requests if we are connected
@@ -171,6 +186,7 @@ class LeagueConnection:
             self.listener.time_between_runs = self.SLOW_LISTEN_TIMEOUT
         else:
             self.listener.time_between_runs = self.LISTEN_TIMEOUT
+
 
     def parse_cmd_output(self, output: str) -> DefaultDict:
         """Parses cmd output to a dictionary"""

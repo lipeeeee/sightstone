@@ -54,7 +54,7 @@ class BackgroundThread(Thread):
     def run(self) -> None:
         """Main thread execution"""
         while self.running:
-            print(f"RAN: {self.fn_to_run} with timeout: {self.time_between_runs}")
+            print(f">> RAN: {self.fn_to_run} with timeout: {self.time_between_runs}")
             self.fn_to_run()
             sleep(self.time_between_runs)
 
