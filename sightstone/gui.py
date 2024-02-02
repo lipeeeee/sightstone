@@ -153,6 +153,7 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_combo(
                         tag="create_mapId",
                         width=100, items=list(SC.STR_TO_MAP.keys()),
+                        default_value=list(SC.STR_TO_MAP.keys())[0],
                         indent=INDENT_BUTTONS_GROUP_4 * 3) 
 
                 with dpg.group(horizontal=True):
@@ -170,6 +171,7 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_combo(
                         tag="create_teamCount",
                         width=100, items=[str(i) for i in range(1, 6)],
+                        default_value="1",
                         indent=INDENT_BUTTONS_GROUP_4 * 3) 
 
                 with dpg.group(horizontal=True):
