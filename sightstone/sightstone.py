@@ -91,7 +91,7 @@ class Sightstone:
 
     def queue_accept(self):
         """Accept queue if Found"""
-        if not self.__accept_listener_running:
+        if not self.__accept_listener_running or not self.lca_hook.connected:
             return
         response = self.lca_hook.get(path="lol-lobby/v2/lobby/matchmaking/search-state/")
         if response and response.json()["searchState"] == self.QUEUE_FOUND:
