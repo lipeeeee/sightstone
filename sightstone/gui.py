@@ -23,7 +23,7 @@ ROLE_TO_INT_MAPPING = {
 }
 
 """Multi-Search available websites"""
-MULTI_SEARCH_WEBSITES = ["OP.GG", "U.GG", "PORO.GG", "Porofessor.gg"]
+REVEAL_LOBBY_WEBSITES = ["OP.GG", "U.GG", "PORO.GG", "Porofessor.gg"]
 
 def info_label(sightstone_hook: Sightstone):
     """Returns info label(top label) with sightstone info"""
@@ -61,8 +61,17 @@ def init_gui(sightstone_hook: Sightstone):
                         default_value=role_to_int_str_list[1], width=115, callback=callback_set_roles)
                     dpg.add_button(
                         label="Delete Lobby", callback=sightstone_hook.delete_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
-                dpg.add_separator()
 
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Dodge", callback=sightstone_hook.dodge_lobby)
+                    dpg.add_button(
+                        label="Reveal Lobby",
+                        callback=sightstone_hook.reveal_lobby,
+                        indent=INDENT_BUTTONS_GROUP_4)
+                    dpg.add_combo(tag="revealWebsite", width=139, items=REVEAL_LOBBY_WEBSITES, default_value=REVEAL_LOBBY_WEBSITES[0])
+                    dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener, indent=INDENT_BUTTONS_GROUP_4 * 3)
+
+                dpg.add_separator()
                 with dpg.group(horizontal=True):
                     dpg.add_button(
                         label="Quick Play", callback=lambda:sightstone_hook.create_lobby(SC.QUICK_PLAY_ID))
@@ -176,16 +185,6 @@ def init_gui(sightstone_hook: Sightstone):
                         callback=lambda:sightstone_hook.create_lobby("0", 
                         custom=sightstone_hook.custom_game_json(SC.CLASSIC_MODE, dpg.get_value("create_teamCount"), SC.STR_TO_MAP[dpg.get_value("create_mapId")])),
                         indent=INDENT_BUTTONS_GROUP_4 * 3)
-
-                dpg.add_separator()
-                with dpg.group(horizontal=True):
-                    dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener)
-                    dpg.add_button(label="Dodge", callback=sightstone_hook.dodge_lobby, indent=INDENT_BUTTONS_GROUP_4)
-                    dpg.add_button(
-                        label="Reveal Lobby",
-                        callback=sightstone_hook.reveal_lobby,
-                        indent=INDENT_BUTTONS_GROUP_4 * 2)
-                    dpg.add_combo(tag="revealWebsite", width=150)
 
             with dpg.tab(label="Profile"):
                 dpg.add_button(label="Remove Challenges",
