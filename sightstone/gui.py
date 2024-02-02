@@ -1,8 +1,11 @@
 # Module that handles gui
 
+import sys 
 import string
 import random
 import dearpygui.dearpygui as dpg
+sys.path.append("./") # Fixes unknown import when compiled from repo root
+from lib.background_thread import BackgroundThread
 import sightstone_constants as SC
 from sightstone import Sightstone
 
@@ -25,12 +28,30 @@ ROLE_TO_INT_MAPPING = {
 """Multi-Search available websites"""
 REVEAL_LOBBY_WEBSITES = [SC.OP_GG]
 
-def info_label(sightstone_hook: Sightstone):
-    """Returns info label(top label) with sightstone info"""
+"""Friend groups"""
+friend_groups: list
+
+### Threads
+update_friend_groups_thread: BackgroundThread
+UPDATE_FRIEND_GROUPS_TIMEOUT = 5
+SLOW_UPDATE_FRIEND_GROUPS_TIMEOUT = 13
+def update_friend_groups(sightstone_hook: Sightstone):
+    """Threaded function to periodically update `friend_groups`"""
+    if sightstone_hook.lca_hook.connected:
+        update_friend_groups_thread.time_between_runs = SLOW_UPDATE_FRIEND_GROUPS_TIMEOUT
+    else:
+        update_friend_groups_thread.time_between_runs = UPDATE_FRIEND_GROUPS_TIMEOUT
+    friend_groups = [group["name"] for group in sightstone_hook.get_groups()]
+    dpg.configure_item("friendGroups", items=friend_groups)
+
+update_info_label_thread: BackgroundThread
+UPDATE_INFO_LABEL_TIMEOUT = 5
+def update_info_label(sightstone_hook: Sightstone):
+    """Threaded function to periodically update `info_label` with sightstone/LCA info"""
     info = SC.SIGHTSTONE + " by lipeeeee" # General info
     info += " - " + sightstone_hook.get_current_patch() # Patch info
     info += " | Connected to: " + str(sightstone_hook.get_current_user()) # User info
-    return info
+    dpg.set_value("info", info)
 
 # pylint: disable=R0915
 def init_gui(sightstone_hook: Sightstone):
@@ -218,6 +239,10 @@ def init_gui(sightstone_hook: Sightstone):
                                 callback=lambda:sightstone_hook.open_website_on_reveal(
                                      website=dpg.get_value("revealWebsite"), query=sightstone_hook.transform_participants_into_query(
                                          set(["lipe#69420", "MISSING KERIA ON#000", "naive#444", "wolfs child#EUW"]))))
+                dpg.add_button(label="get group",
+                               callback=sightstone_hook.get_groups)
+                dpg.add_combo(tag="friendGroups")
+                dpg.add_tooltip("friendGroups",label="ola")
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
@@ -230,10 +255,31 @@ def init_gui(sightstone_hook: Sightstone):
     )
     dpg.show_viewport()
 
+    # Start threading
+    start_threads(sightstone_hook)
+
     dpg.setup_dearpygui()
     while dpg.is_dearpygui_running():
-        # Update necessary info for each frame
-        dpg.set_value("info", info_label(sightstone_hook))
-
         dpg.render_dearpygui_frame()
     dpg.destroy_context()
+
+def start_threads(sightstone_hook: Sightstone):
+    """Starts threading"""
+    global update_friend_groups_thread
+    update_friend_groups_thread = BackgroundThread(
+        fn_to_run=lambda:update_friend_groups(sightstone_hook),
+        time_between_runs=UPDATE_FRIEND_GROUPS_TIMEOUT,
+        daemon=True,
+        description="UpdateFriendGroupThread"
+    )
+    update_friend_groups_thread.start()
+
+    global update_info_label_thread
+    update_info_label_thread = BackgroundThread(
+        fn_to_run=lambda:update_info_label(sightstone_hook),
+        time_between_runs=UPDATE_INFO_LABEL_TIMEOUT,
+        daemon=True,
+        description="UpdateInfoLabelThread"
+    )
+    update_info_label_thread.start()
+

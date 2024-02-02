@@ -42,6 +42,17 @@ class Sightstone:
         )
         return self.is_valid_response(response)
 
+    def get_groups(self) -> list[dict]:
+        """Get's all friend's group"""
+        response = self.lca_hook.get(
+            path="lol-chat/v1/friend-groups/"
+        )
+        
+        if response:
+            return response.json()
+        else:
+            return list()
+
     def create_lobby(self, lobby_id: str, custom: dict | None = None) -> bool:
         """Creates lobby given an ID"""
         response = self.lca_hook.post(

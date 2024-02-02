@@ -204,7 +204,7 @@ class LeagueConnection:
         cmd_output = execute_cmd_command(self.CMD_HACK)
         self.cmd_output_dict = self.parse_cmd_output(cmd_output)
         self.connected = cmd_output.startswith(self.LCA_CONNECTED_OUTPUT)
-        if True:
+        if False:
             print(f"AUTH: {self.auth}")
             print(f"RIOT-AUTH: {self.riot_auth}")
             print(f"PORT: {self.port}")

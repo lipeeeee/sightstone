@@ -31,6 +31,7 @@ class BackgroundThread(Thread):
         self,
         fn_to_run: Callable,
         time_between_runs: int,
+        description: str | None = None,
         group: None = None,
         target: Callable[..., object] | None = None,
         name: str | None = None,
@@ -42,6 +43,7 @@ class BackgroundThread(Thread):
         super().__init__(group, target, name, args, kwargs, daemon=daemon)
         self.fn_to_run = fn_to_run
         self.time_between_runs = time_between_runs
+        self.description = description
         self.running = False
         self.started = False
 
@@ -54,7 +56,8 @@ class BackgroundThread(Thread):
     def run(self) -> None:
         """Main thread execution"""
         while self.running:
-            print(f">> RAN: {self.fn_to_run} with timeout: {self.time_between_runs}")
+            print(f"THREADING >> RAN: {self.fn_to_run if not self.description else self.description} \
+with timeout: {self.time_between_runs}")
             self.fn_to_run()
             sleep(self.time_between_runs)
 
