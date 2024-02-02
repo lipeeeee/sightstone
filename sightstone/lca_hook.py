@@ -98,13 +98,48 @@ class LeagueConnection:
 
     @property
     def remoting_auth_token(self):
-        """Riot auth key"""
+        """LCU auth key"""
         return self.cmd_output_dict["remoting-auth-token"]
 
     @property
     def auth(self):
         """Auth tuple (username, remoting_auth_token)"""
         return (self.username, self.remoting_auth_token)
+
+    @property
+    def install_dir(self):
+        """League install directory"""
+        return self.cmd_output_dict["install-directory"]
+
+    @property
+    def locale(self):
+        """League locale"""
+        return self.cmd_output_dict["locale"]
+
+    @property
+    def region(self):
+        """League region"""
+        return self.cmd_output_dict["region"]
+
+    @property
+    def app_name(self):
+        """League executable"""
+        return self.cmd_output_dict["app-name"]
+
+    @property
+    def riot_port(self):
+        """Riot acess port"""
+        return self.cmd_output_dict["riotclient-app-port"]
+
+    @property
+    def riot_token(self):
+        """Riot acess token"""
+        return self.cmd_output_dict["riotclient-auth-token"]
+
+    @property
+    def riot_auth(self):
+        """Riot auth tuple"""
+        return (self.username, self.riot_token)
 
     def build_url(self, path: str) -> str:
         """Build request url"""
@@ -122,6 +157,14 @@ class LeagueConnection:
         cmd_output = execute_cmd_command(self.CMD_HACK)
         self.cmd_output_dict = self.parse_cmd_output(cmd_output)
         self.connected = cmd_output.startswith(self.LCA_CONNECTED_OUTPUT)
+        if True:
+            print(f"AUTH: {self.auth}")
+            print(f"RIOT-AUTH: {self.riot_auth}")
+            print(f"PORT: {self.port}")
+            print(f"RIOT-PORT: {self.riot_port}")
+            print(f"INSTALL-DIR: {self.install_dir}")
+            print(f"LEAGUE-EXE: {self.app_name}")
+            print("--------")
         
         # Slow down requests if we are connected
         if self.connected:
