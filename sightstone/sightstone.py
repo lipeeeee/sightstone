@@ -63,7 +63,8 @@ class Sightstone:
 
     def dodge_lobby(self) -> bool:
         """Dodges current lobby"""
-        response = self.lca_hook.post(path="lol-lobby/v1/lobby/custom/cancel-champ-select/")
+        lobby_hack = 'destination=lcdsServiceProxy&method=call&args=["","teambuilder-draft","quitV2",""]'
+        response = self.lca_hook.post(path=f'lol-login/v1/session/invoke?{lobby_hack}')
 
         return self.is_valid_response(response)
 
@@ -95,8 +96,13 @@ class Sightstone:
             return
         response = self.lca_hook.get(path="lol-lobby/v2/lobby/matchmaking/search-state/")
         if response and response.json()["searchState"] == self.QUEUE_FOUND:
-            print("FOUND QUEUE ACCEPT POP")
             self.lca_hook.post(path="lol-matchmaking/v1/ready-check/accept/")
+
+    def reveal_lobby(self):
+        """Reveal ranked teamates"""
+        response = self.lca_hook.get(path="chat/v5/participants/")
+        if response:
+            print(response.json())
 
     def get_available_bots(self):
         """Gets available bots"""
