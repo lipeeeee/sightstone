@@ -23,7 +23,7 @@ ROLE_TO_INT_MAPPING = {
 }
 
 """Multi-Search available websites"""
-REVEAL_LOBBY_WEBSITES = [SC.OP_GG, SC.U_GG, SC.PORO_GG, SC.POROFESSOR_GG]
+REVEAL_LOBBY_WEBSITES = [SC.OP_GG]
 
 def info_label(sightstone_hook: Sightstone):
     """Returns info label(top label) with sightstone info"""
@@ -66,8 +66,10 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(label="Dodge", callback=sightstone_hook.dodge_lobby)
                     dpg.add_button(
                         label="Reveal Lobby",
-                        callback=sightstone_hook.reveal_lobby,
-                        indent=INDENT_BUTTONS_GROUP_4)
+                        indent=INDENT_BUTTONS_GROUP_4,
+                        callback=lambda:sightstone_hook.open_website_on_reveal(
+                            website=dpg.get_value("revealWebsite"), query=sightstone_hook.transform_participants_into_query(
+                                sightstone_hook.reveal_lobby())))
                     dpg.add_combo(tag="revealWebsite", width=139, items=REVEAL_LOBBY_WEBSITES, default_value=REVEAL_LOBBY_WEBSITES[0])
                     dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener, indent=INDENT_BUTTONS_GROUP_4 * 3)
 
@@ -212,6 +214,10 @@ def init_gui(sightstone_hook: Sightstone):
                                 callback=lambda:sightstone_hook.set_positions(
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
+                dpg.add_button(label="Reveal Lobby",
+                                callback=lambda:sightstone_hook.open_website_on_reveal(
+                                     website=dpg.get_value("revealWebsite"), query=sightstone_hook.transform_participants_into_query(
+                                         set(["lipe#69420", "MISSING KERIA ON#000", "naive#444", "wolfs child#EUW"]))))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake

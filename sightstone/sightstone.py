@@ -1,6 +1,7 @@
 # Main cheat engine
 
 import requests
+import webbrowser
 from lca_hook import LeagueConnection
 from lib.background_thread import BackgroundThread
 import sightstone_constants as SC
@@ -39,8 +40,6 @@ class Sightstone:
         response = self.lca_hook.get(
             path="lol-game-queues/v1/queues/"
         )
-        if response:
-            print(response.json())
         return self.is_valid_response(response)
 
     def create_lobby(self, lobby_id: str, custom: dict | None = None) -> bool:
@@ -100,9 +99,29 @@ class Sightstone:
 
     def reveal_lobby(self):
         """Reveal ranked teamates"""
-        response = self.lca_hook.get(path="chat/v5/participants/")
+        response = self.lca_hook.riot_get(path="chat/v5/participants")
         if response:
-            print(response.json())
+            summNames:list[str] = list()
+            for entry in response.json()["participants"]:
+                summNames.append(f"{entry['game_name']}#{entry['game_tag']}")
+            return set(summNames[-5:]) # Get last 5
+
+    def open_website_on_reveal(self, website, query):
+        """Opens lobby checking website with a given query"""
+        if not query:
+            return
+        
+        # compile url with query
+        url = None
+        match website:
+            case SC.OP_GG:
+                url = f"https://{self.lca_hook.region}.op.gg/multi/query={query}"
+            case SC.U_GG:
+                query = query.replace("%23", "-")
+                url = f"https://u.gg/multisearch?summoners={query}&region={str(self.lca_hook.region).lower()}"
+
+        if url:
+            webbrowser.open(url)
 
     def get_available_bots(self):
         """Gets available bots"""
@@ -135,6 +154,16 @@ class Sightstone:
 
         return None
 
+    def transform_participants_into_query(self, participants: set[str] | None):
+        """Transforms the return of reveal lobby(list(name#tag)) into a URL readable format"""
+        if not participants:
+            return None
+
+        query: str = ""
+        for participant in participants:
+            query += participant.replace("#", "%23") + ","
+        return query[:-1]
+
     def create_lobby_with_positions(self, lobby_id: str, pos1: str, pos2: str) -> bool:
         """Creates league lobby with set positions"""
         return self.create_lobby(lobby_id) and self.set_positions(pos1, pos2)
@@ -158,6 +187,7 @@ class Sightstone:
             },
             "isCustom":True
         }
+
     def is_valid_response(self, response: requests.Response | None):
         """Checks if the response is valid"""
         return not (response is None or response.status_code in (204, 500))

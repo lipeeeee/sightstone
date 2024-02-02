@@ -108,6 +108,11 @@ class LeagueConnection:
         return (self.username, self.remoting_auth_token)
 
     @property
+    def lcu_header(self):
+        """LCU header"""
+        return self.make_header(self.port, self.remoting_auth_token)
+
+    @property
     def install_dir(self):
         """League install directory"""
         return self.cmd_output_dict["install-directory"]
@@ -141,6 +146,11 @@ class LeagueConnection:
     def riot_auth(self):
         """Riot auth tuple"""
         return (self.username, self.riot_token)
+    
+    @property
+    def riot_header(self):
+        """Riot http request header"""
+        return self.make_header(self.riot_port, self.riot_token)
 
     @property
     def league_version(self) -> tuple[int, int, int, int] | None:
@@ -155,9 +165,32 @@ class LeagueConnection:
         except Exception as e:
             print(f"ERROR: COULD NOT GET LEAGUE VERSION: {e}")
 
-    def build_url(self, path: str) -> str:
+    def make_header(self, port: str, token: str):
+        """Dynamic make header function for riot-level acess or just LCU"""
+        header = {
+            "Host": f"{self.base_url}:{port}",
+            "Connection": "keep-alive",
+            "Authorization": f"Basic {token}",
+            "Accept": "application/json",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Origin": self.base_url,
+            "Content-Type": "application/json",
+            "Origin": f"{self.protocol}://{self.base_url}:{port}",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-User": "?F",
+            "User-Agent": f"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) RiotClient/{self.league_version} (CEF 74) Safari/537.36",
+            "sec-ch-ua": "Chromium",
+            "Referer": f"{self.protocol}://{self.base_url}:{port}/index.html",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.9"
+        }
+        return header
+
+    def build_url(self, path: str, port: str) -> str:
         """Build request url"""
-        return f"{self.protocol}://{self.base_url}:{self.port}/{path}"
+        return f"{self.protocol}://{self.base_url}:{port}/{path}"
 
     def listen(self) -> None:
         """Listens to the status of `LCA`
@@ -179,6 +212,7 @@ class LeagueConnection:
             print(f"INSTALL-DIR: {self.install_dir}")
             print(f"LEAGUE-EXE: {self.app_name}")
             print(f"FILEINFO: {self.league_version}")
+            print(f"REGION: {self.region}")
             print("--------")
         
         # Slow down requests if we are connected
@@ -209,9 +243,23 @@ class LeagueConnection:
             return None
 
         try:
-            return requests.get(self.build_url(path), auth=self.auth, verify=False)
+            return requests.get(self.build_url(path, self.port), auth=self.auth, verify=False)
         except Exception:
             return None
+
+    def riot_get(self, path: str) -> Response | None:
+        """Riot-Level Get request"""
+        if not self.connected:
+            return None
+
+        try:
+            response = requests.get(
+                self.build_url(path, self.riot_port), 
+                auth=self.riot_auth, verify=False,
+                headers=self.riot_header)
+            return response
+        except Exception as e:
+            print(f"ERROR IN RIOT_GET: {e}")
 
     def post(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:
         """Post into LCA"""
@@ -220,7 +268,7 @@ class LeagueConnection:
 
         try:
             return requests.post(
-                self.build_url(path),
+                self.build_url(path, self.port),
                 data=data, json=json,
                 auth=self.auth, verify=False
             )
@@ -234,7 +282,7 @@ class LeagueConnection:
 
         try:
             return requests.put(
-                self.build_url(path),
+                self.build_url(path, self.port),
                 data=data, json=json,
                 auth=self.auth, verify=False
             )
@@ -248,7 +296,7 @@ class LeagueConnection:
 
         try:
             return requests.delete(
-                self.build_url(path),
+                self.build_url(path, self.port),
                 data=data, json=json,
                 auth=self.auth, verify=False)
         except Exception:
