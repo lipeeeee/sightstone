@@ -83,7 +83,7 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(
                         label="Delete Lobby", callback=sightstone_hook.delete_lobby)
                     dpg.add_button(
-                        label="Reveal Lobby",
+                        label="Lobby Reveal",
                         indent=INDENT_BUTTONS_GROUP_4,
                         callback=lambda:sightstone_hook.search_lobby(dpg.get_value("revealWebsite")))
                     dpg.add_combo(tag="revealWebsite", width=139, items=sightstone_hook.AVAILABLE_WEBSITES, default_value=sightstone_hook.AVAILABLE_WEBSITES[0])
@@ -94,6 +94,11 @@ def init_gui(sightstone_hook: Sightstone):
                 
                 with dpg.group(horizontal=True):
                     dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener)
+                    dpg.add_button(
+                        label="Invite from group",
+                        indent=INDENT_BUTTONS_GROUP_4,
+                        callback=lambda:sightstone_hook.invite_friends_from_group(dpg.get_value("friendGroups")))
+                    dpg.add_combo(tag="friendGroups", width=104)
 
                 dpg.add_separator()
                 with dpg.group(horizontal=True):
@@ -243,8 +248,6 @@ def init_gui(sightstone_hook: Sightstone):
                                      query=sightstone_hook.transform_participants_into_query(set(["lipe#69420", "MISSING KERIA ON#000", "naive#444", "wolfs child#EUW"]))))
                 dpg.add_button(label="get group",
                                callback=sightstone_hook.get_groups)
-                dpg.add_combo(tag="friendGroups")
-                dpg.add_tooltip("friendGroups",label="ola")
 
                 dpg.add_button(label="QUEUE", callback=sightstone_hook.get_queues)
                 dpg.add_button(label="muselfg", callback=lambda:sightstone_hook.search_myself(SC.OP_GG))

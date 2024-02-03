@@ -39,6 +39,14 @@ class Sightstone:
             return response.json()
         return list()
 
+    def get_friends(self) -> dict:
+        """Get friends"""
+        response = self.lca_hook.get(path="lol-chat/v1/friends")
+
+        if response:
+            return response.json()
+        return dict()
+    
     def get_groups(self) -> list[dict]:
         """Get's all friend's group"""
         response = self.lca_hook.get(path="lol-chat/v1/friend-groups/")
@@ -83,6 +91,25 @@ class Sightstone:
         response = self.lca_hook.post(path=f'lol-login/v1/session/invoke?{lobby_hack}')
 
         return self.is_valid_response(response)
+
+    def invite_to_lobby(self, summoner_id: str) -> bool:
+        """Invite to lobby a summoner id"""
+        # Have to use a custom POST request because this endpoint only accepts vectors
+        response = self.lca_hook.post(
+            "lol-lobby/v2/lobby/invitations/",
+            json=[{"toSummonerId": summoner_id}])
+
+        return self.is_valid_response(response)
+
+    def invite_friends_from_group(self, group: str) -> None:
+        """Invite all friends from specific group"""
+        friends = self.get_friends()
+        if len(friends) == 0:
+            return
+
+        for friend in friends:
+            if friend["groupName"] == group:
+                self.invite_to_lobby(friend["summonerId"])
 
     def toggle_accept_listener(self):
         """Toggles the auto accept thread"""
@@ -236,7 +263,7 @@ class Sightstone:
 
     def is_valid_response(self, response: requests.Response | None) -> bool:
         """Checks if the response is valid"""
-        return not (response is None or response.status_code in (204, 500))
+        return not (response is None or response.status_code in (204, 400, 401, 402, 500))
 
     def __str__(self) -> str:
         all_callable_funcs = [x for x in dir(self) if callable(getattr(self, x)) and not x.startswith("__")]

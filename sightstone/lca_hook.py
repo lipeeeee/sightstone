@@ -261,7 +261,7 @@ class LeagueConnection:
         except Exception as e:
             print(f"ERROR IN RIOT_GET: {e}")
 
-    def post(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:
+    def post(self, path: str, data: dict | None = None, json: dict | list[dict] | None = None) -> Response | None:
         """Post into LCA"""
         if not self.connected:
             return None
