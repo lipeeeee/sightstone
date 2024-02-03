@@ -53,3 +53,8 @@ OP_GG           = "OP.GG"
 U_GG            = "U.GG"
 PORO_GG         = "PORO.GG"
 POROFESSOR_GG   = "Porofessor.gg"
+
+# Queue
+QUEUE_SEARCHING = "Searching"
+QUEUE_FOUND     = "Found"
+QUEUE_INVALID   = "Invalid"

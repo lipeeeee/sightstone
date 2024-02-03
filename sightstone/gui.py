@@ -25,9 +25,6 @@ ROLE_TO_INT_MAPPING = {
     "NONE": SC.NONE_ID,
 }
 
-"""Multi-Search available websites"""
-REVEAL_LOBBY_WEBSITES = [SC.OP_GG]
-
 """Friend groups"""
 friend_groups: list
 
@@ -88,10 +85,11 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(
                         label="Reveal Lobby",
                         indent=INDENT_BUTTONS_GROUP_4,
-                        callback=lambda:sightstone_hook.open_website_on_reveal(
-                            website=dpg.get_value("revealWebsite"), query=sightstone_hook.transform_participants_into_query(
-                                sightstone_hook.reveal_lobby())))
-                    dpg.add_combo(tag="revealWebsite", width=139, items=REVEAL_LOBBY_WEBSITES, default_value=REVEAL_LOBBY_WEBSITES[0])
+                        callback=lambda:sightstone_hook.open_website(
+                            website=dpg.get_value("revealWebsite"),
+                            query=sightstone_hook.transform_participants_into_query(sightstone_hook.reveal_lobby()),
+                            multi=True))
+                    dpg.add_combo(tag="revealWebsite", width=139, items=sightstone_hook.AVAILABLE_WEBSITES, default_value=sightstone_hook.AVAILABLE_WEBSITES[0])
                     dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener, indent=INDENT_BUTTONS_GROUP_4 * 3)
 
                 dpg.add_separator()
@@ -236,13 +234,16 @@ def init_gui(sightstone_hook: Sightstone):
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
                                 ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
                 dpg.add_button(label="Reveal Lobby",
-                                callback=lambda:sightstone_hook.open_website_on_reveal(
-                                     website=dpg.get_value("revealWebsite"), query=sightstone_hook.transform_participants_into_query(
-                                         set(["lipe#69420", "MISSING KERIA ON#000", "naive#444", "wolfs child#EUW"]))))
+                                callback=lambda:sightstone_hook.open_website(
+                                     website=dpg.get_value("revealWebsite"),
+                                     multi=True,
+                                     query=sightstone_hook.transform_participants_into_query(set(["lipe#69420", "MISSING KERIA ON#000", "naive#444", "wolfs child#EUW"]))))
                 dpg.add_button(label="get group",
                                callback=sightstone_hook.get_groups)
                 dpg.add_combo(tag="friendGroups")
                 dpg.add_tooltip("friendGroups",label="ola")
+
+                dpg.add_button(label="QUEUE", callback=sightstone_hook.get_queues)
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
