@@ -77,20 +77,23 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_combo(
                         tag="pos2", items=role_to_int_str_list,
                         default_value=role_to_int_str_list[1], width=115, callback=callback_set_roles)
-                    dpg.add_button(
-                        label="Delete Lobby", callback=sightstone_hook.delete_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
+                    dpg.add_button(label="Dodge", callback=sightstone_hook.dodge_lobby, indent=INDENT_BUTTONS_GROUP_4 * 3)
 
                 with dpg.group(horizontal=True):
-                    dpg.add_button(label="Dodge", callback=sightstone_hook.dodge_lobby)
+                    dpg.add_button(
+                        label="Delete Lobby", callback=sightstone_hook.delete_lobby)
                     dpg.add_button(
                         label="Reveal Lobby",
                         indent=INDENT_BUTTONS_GROUP_4,
-                        callback=lambda:sightstone_hook.open_website(
-                            website=dpg.get_value("revealWebsite"),
-                            query=sightstone_hook.transform_participants_into_query(sightstone_hook.reveal_lobby()),
-                            multi=True))
+                        callback=lambda:sightstone_hook.search_lobby(dpg.get_value("revealWebsite")))
                     dpg.add_combo(tag="revealWebsite", width=139, items=sightstone_hook.AVAILABLE_WEBSITES, default_value=sightstone_hook.AVAILABLE_WEBSITES[0])
-                    dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener, indent=INDENT_BUTTONS_GROUP_4 * 3)
+                    dpg.add_button(
+                        label="Search Myself",
+                        indent=INDENT_BUTTONS_GROUP_4 * 3,
+                        callback=lambda:sightstone_hook.search_myself(SC.OP_GG))
+                
+                with dpg.group(horizontal=True):
+                    dpg.add_checkbox(label="Auto Accept", callback=sightstone_hook.toggle_accept_listener)
 
                 dpg.add_separator()
                 with dpg.group(horizontal=True):
@@ -244,6 +247,7 @@ def init_gui(sightstone_hook: Sightstone):
                 dpg.add_tooltip("friendGroups",label="ola")
 
                 dpg.add_button(label="QUEUE", callback=sightstone_hook.get_queues)
+                dpg.add_button(label="muselfg", callback=lambda:sightstone_hook.search_myself(SC.OP_GG))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake

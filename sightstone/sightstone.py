@@ -141,29 +141,6 @@ class Sightstone:
         """Creates league lobby with set positions"""
         return self.create_lobby(lobby_id) and self.set_positions(pos1, pos2)
 
-    def transform_participants_into_query(self, participants: set[str] | None) -> str | None:
-        """Transforms the return of reveal lobby(list(name#tag)) into a URL readable format"""
-        if not participants:
-            return None
-
-        query: str = ""
-        for participant in participants:
-            query += participant.replace("#", self.URI_HASHTAG) + ","
-        return query[:-1] # Without last ","
-
-    def reveal_lobby(self) -> set[str]:
-        """Reveal ranked teamates, This uses special riot acess"""
-        response = self.lca_hook.riot_get(path="chat/v5/participants/")
-        if response:
-            summNames:list[str] = list()
-            for entry in response.json()["participants"]:
-                summNames.append(f"{entry['game_name']}#{entry['game_tag']}")
-            return set(summNames[-5:]) # Get last 5
-        return set()
-    
-    def open_my_opgg(self) -> None:
-        """Opens connected player's opgg"""
-        ...
     def open_website(self, website: str | None, query: str | None, multi: bool = False) -> None:
         """Open's data checking website(op.gg, u.gg, etc...) with a given query"""
         if not query or not website:
@@ -181,6 +158,48 @@ class Sightstone:
         # Open if could parse
         if url:
             webbrowser.open(url)
+
+    def search_lobby(self, website: str | None) -> None:
+        """Searches current lobby in a website"""
+        if not website:
+            return
+
+        # Get participants
+        participants = self.reveal_lobby()
+        if len(participants) == 0:
+            return
+        
+        # Compile query
+        query = self.transform_participants_into_query(participants)
+        
+        # Open website
+        self.open_website(website=website, query=query, multi=True)
+
+    def reveal_lobby(self) -> set[str]:
+        """Reveal ranked teamates, This uses special riot acess"""
+        response = self.lca_hook.riot_get(path="chat/v5/participants/")
+        if response:
+            summNames:list[str] = list()
+            for entry in response.json()["participants"]:
+                summNames.append(f"{entry['game_name']}#{entry['game_tag']}")
+            return set(summNames[-5:]) # Get last 5
+        return set()
+    
+    def transform_participants_into_query(self, participants: set[str] | None) -> str | None:
+        """Transforms the return of reveal lobby(list(name#tag)) into a URL readable format"""
+        if not participants:
+            return None
+
+        query: str = ""
+        for participant in participants:
+            query += participant.replace("#", self.URI_HASHTAG) + ","
+        return query[:-1] # Without last ","
+
+    def search_myself(self, website: str) -> None:
+        """Opens connected player's data website"""
+        user = self.get_current_user()
+        if user:
+            self.open_website(website=website, query=user.replace("#", self.URI_HASHTAG))
 
     def remove_challenges(self) -> bool:
         """Remove League Challenges
