@@ -257,7 +257,8 @@ def init_gui(sightstone_hook: Sightstone):
     dpg.create_viewport(
         title=safe_title,
         width=WIDTH, height=HEIGHT,
-        resizable=False
+        resizable=False,
+        small_icon="data/icon.ico", large_icon="data/icon.ico"
     )
     dpg.show_viewport()
 
