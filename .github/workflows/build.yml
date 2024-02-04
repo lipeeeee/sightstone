@@ -19,4 +19,6 @@ jobs:
       - name: Get requirements
         run: pip install -r requirements.txt
       - name: Build into windows EXE
-        run: pyinstaller driver.spec
+        run: |
+          pip install pyinstaller
+          pyinstaller driver.spec
