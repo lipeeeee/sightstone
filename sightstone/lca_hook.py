@@ -9,9 +9,8 @@ from win32api import GetFileVersionInfo, LOWORD, HIWORD
 from collections import defaultdict
 from typing import DefaultDict
 
-sys.path.append("./") # Fixes unknown import when compiled from repo root
-from lib.background_thread import BackgroundThread
-from lib.windows_calls import execute_cmd_command
+from sightstone.background_thread import BackgroundThread
+from sightstone.windows_calls import execute_cmd_command
 
 class LeagueConnection:
     """A hacked hook of `LCA`(League client api)

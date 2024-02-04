@@ -1,7 +1,7 @@
 # Sightstone entry point
 
-from gui import init_gui
-from sightstone import Sightstone
+from sightstone.gui import init_gui
+from sightstone.sightstone import Sightstone
 
 def main():
     sightstone_engine = Sightstone()

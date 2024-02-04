@@ -1,13 +1,11 @@
 # Module that handles gui
 
-import sys 
 import string
 import random
 import dearpygui.dearpygui as dpg
-sys.path.append("./") # Fixes unknown import when compiled from repo root
-from lib.background_thread import BackgroundThread
-import sightstone_constants as SC
-from sightstone import Sightstone
+from sightstone.background_thread import BackgroundThread
+import sightstone.sightstone_constants as SC
+from sightstone.sightstone import Sightstone
 
 WIDTH = 600
 HEIGHT = 400

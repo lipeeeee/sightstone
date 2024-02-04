@@ -2,9 +2,9 @@
 
 import requests
 import webbrowser
-from lca_hook import LeagueConnection
-from lib.background_thread import BackgroundThread
-import sightstone_constants as SC
+from sightstone.lca_hook import LeagueConnection
+from sightstone.background_thread import BackgroundThread
+import sightstone.sightstone_constants as SC
 
 class Sightstone:
     """Sightstone engine for league QOL hacking
