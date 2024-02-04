@@ -21,4 +21,4 @@ jobs:
       - name: Build into windows EXE
         run: |
           pip install pyinstaller
-          pyinstaller driver.spec
+          pyinstaller build.spec
