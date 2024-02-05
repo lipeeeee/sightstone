@@ -99,6 +99,11 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_combo(tag="friendGroups", width=104)
 
                 dpg.add_separator()
+                with dpg.group(label="ola", horizontal=True):
+                    dpg.add_input_text(tag="instaMessage")
+                    dpg.add_checkbox(label="Instant Message")
+
+                dpg.add_separator()
                 with dpg.group(horizontal=True):
                     dpg.add_button(
                         label="Quick Play", callback=lambda:sightstone_hook.create_lobby(SC.QUICK_PLAY_ID))

@@ -27,7 +27,8 @@ class Sightstone:
     def __init__(self) -> None:
         self.lca_hook = LeagueConnection()
         self.accept_listener = BackgroundThread(
-            fn_to_run=self.queue_accept, time_between_runs=self.AUTO_ACCEPT_QUEUE_TIMEOUT, daemon=True
+            fn_to_run=self.queue_accept, time_between_runs=self.AUTO_ACCEPT_QUEUE_TIMEOUT,
+            daemon=True, description="QueueAccept"
         )
         self.__accept_listener_running = False
 
@@ -128,7 +129,7 @@ class Sightstone:
 
         response = self.lca_hook.get(path="lol-lobby/v2/lobby/matchmaking/search-state/")
         if response and response.json()["searchState"] == SC.QUEUE_FOUND:
-            self.lca_hook.post(path="lol-matchmaking/v1/ready-check/accept/")
+            r = self.lca_hook.post(path="lol-matchmaking/v1/ready-check/accept/")
 
     def get_available_bots(self) -> list[dict]:
         """Gets available bots"""
