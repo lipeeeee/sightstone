@@ -23,6 +23,8 @@ ROLE_TO_INT_MAPPING = {
     "NONE": SC.NONE_ID,
 }
 
+INSTANT_GROUP_WIDTH = WIDTH - (WIDTH // 3)
+
 """Friend groups"""
 friend_groups: list
 
@@ -99,9 +101,15 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_combo(tag="friendGroups", width=104)
 
                 dpg.add_separator()
-                with dpg.group(label="ola", horizontal=True):
-                    dpg.add_input_text(tag="instaMessage")
+                with dpg.group(horizontal=True):
+                    dpg.add_input_text(tag="instaMessage", width=INSTANT_GROUP_WIDTH)
                     dpg.add_checkbox(label="Instant Message")
+                with dpg.group(horizontal=True):
+                    dpg.add_combo(tag="instaLock", width=INSTANT_GROUP_WIDTH)
+                    dpg.add_checkbox(label="Instant Pick")
+                with dpg.group(horizontal=True):
+                    dpg.add_combo(tag="instaBan", width=INSTANT_GROUP_WIDTH)
+                    dpg.add_checkbox(label="Instant Ban")
 
                 dpg.add_separator()
                 with dpg.group(horizontal=True):
