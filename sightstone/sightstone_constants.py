@@ -58,3 +58,9 @@ POROFESSOR_GG   = "Porofessor.gg"
 QUEUE_SEARCHING = "Searching"
 QUEUE_FOUND     = "Found"
 QUEUE_INVALID   = "Invalid"
+
+# Availability
+ONLINE_AVAILABILITY     = "online"
+AWAY_AVAILABILITY       = "away"
+MOBILE_AVAILABILITY     = "mobile"
+OFFLINE_AVAILABILITY    = "offline"

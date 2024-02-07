@@ -8,7 +8,7 @@ import sightstone.sightstone_constants as SC
 from sightstone.sightstone import Sightstone
 
 WIDTH = 600
-HEIGHT = 400
+HEIGHT = 500
 
 INDENT_BUTTONS_GROUP_4 = WIDTH // 4
 
@@ -22,6 +22,9 @@ ROLE_TO_INT_MAPPING = {
     "FILL": SC.FILL_ID,
     "NONE": SC.NONE_ID,
 }
+
+"""Availability items"""
+AVAILABILITY_ITEMS = [SC.ONLINE_AVAILABILITY, SC.AWAY_AVAILABILITY, SC.MOBILE_AVAILABILITY, SC.OFFLINE_AVAILABILITY]
 
 INSTANT_GROUP_WIDTH = WIDTH - (WIDTH // 3)
 
@@ -105,10 +108,10 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_input_text(tag="instaMessage", width=INSTANT_GROUP_WIDTH)
                     dpg.add_checkbox(label="Instant Message")
                 with dpg.group(horizontal=True):
-                    dpg.add_combo(tag="instaLock", width=INSTANT_GROUP_WIDTH)
+                    dpg.add_combo(tag="instaLock", width=INSTANT_GROUP_WIDTH, default_value="notyet")
                     dpg.add_checkbox(label="Instant Pick")
                 with dpg.group(horizontal=True):
-                    dpg.add_combo(tag="instaBan", width=INSTANT_GROUP_WIDTH)
+                    dpg.add_combo(tag="instaBan", width=INSTANT_GROUP_WIDTH, default_value="notyet")
                     dpg.add_checkbox(label="Instant Ban")
 
                 dpg.add_separator()
@@ -229,8 +232,16 @@ def init_gui(sightstone_hook: Sightstone):
                         indent=INDENT_BUTTONS_GROUP_4 * 3)
 
             with dpg.tab(label="Profile"):
+                with dpg.group():
+                    dpg.add_text("Status:")
+                    dpg.add_input_text(tag="statusImportTxt", width=WIDTH - 30, height=100, multiline=True)
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Import Status", callback=lambda:sightstone_hook.import_status_txt(dpg.get_value("statusImportTxt")))
+                        dpg.add_radio_button(items=AVAILABILITY_ITEMS, tag="statusAvailability", horizontal=True, callback=lambda:sightstone_hook.import_status_availability(dpg.get_value("statusAvailability")))
+
                 dpg.add_button(label="Remove Challenges",
                                 callback=sightstone_hook.remove_challenges)
+
             with dpg.tab(label="Info"):
                 pass
             with dpg.tab(label="Champs"):

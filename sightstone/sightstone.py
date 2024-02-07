@@ -229,6 +229,28 @@ class Sightstone:
         if user:
             self.open_website(website=website, query=user.replace("#", self.URI_HASHTAG))
 
+    def import_status_txt(self, text: str) -> bool:
+        """Import text part of status"""
+        response = self.lca_hook.put(
+            path="lol-chat/v1/me/",
+            json={"statusMessage": text}
+        )
+
+        return self.is_valid_response(response)
+
+    def import_status_availability(self, availability: str) -> bool:
+        """Imports availability part of status"""
+        response = self.lca_hook.put(
+            path="lol-chat/v1/me",
+            json={"availability": availability}
+        )
+
+        return self.is_valid_response(response)
+    
+    def import_status(self, text: str, availability: str) -> bool:
+        """Imports both status text and availability"""
+        return self.import_status_txt(text) and self.import_status_availability(availability)
+
     def remove_challenges(self) -> bool:
         """Remove League Challenges
 
