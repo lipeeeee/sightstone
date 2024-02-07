@@ -165,6 +165,15 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
+    def set_mastery_points(self, mastery_points: int) -> bool:
+        """Set profile mastery points"""
+        response = self.lca_hook.put(
+            path="lol-chat/v1/me/",
+            json={"lol": {"masteryScore": str(mastery_points)}}
+        )
+
+        return self.is_valid_response(response)
+
     def set_positions(self, pos1: str, pos2: str) -> bool:
         """Sets positions in lobby"""
         response = self.lca_hook.put(

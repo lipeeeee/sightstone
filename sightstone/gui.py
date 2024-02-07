@@ -302,7 +302,15 @@ def init_gui(sightstone_hook: Sightstone):
                         dpg.add_button(label="3", callback=lambda:sightstone_hook.set_challenges([3, 3, 3]))
                         dpg.add_button(label="4", callback=lambda:sightstone_hook.set_challenges([4, 4, 4]))
                         dpg.add_button(label="5", callback=lambda:sightstone_hook.set_challenges([5, 5, 5]))
+                dpg.add_separator()
 
+                with dpg.group():
+                    dpg.add_text("Mastery Points:")
+                    with dpg.group(horizontal=True):
+                        dpg.add_input_int(tag="masteryInput", width=400, min_value=1, min_clamped=True, default_value=1)
+                        dpg.add_button(label="Submit", callback=lambda:sightstone_hook.set_mastery_points(dpg.get_value("masteryInput")))
+                        dpg.add_button(label="Max", callback=lambda:sightstone_hook.set_mastery_points(-1))
+                        dpg.add_button(label="None", callback=lambda:sightstone_hook.set_mastery_points(0))
 
             with dpg.tab(label="Info"):
                 pass
