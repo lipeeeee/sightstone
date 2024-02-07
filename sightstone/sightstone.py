@@ -156,6 +156,15 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
+    def set_rank(self, rank: str, division: str, queue: str) -> bool:
+        """Set client rank(on hover)"""
+        response = self.lca_hook.put(
+            path="lol-chat/v1/me/",
+            json={"lol": {"rankedLeagueQueue": queue, "rankedLeagueTier": rank, "rankedLeagueDivision": division}}
+        )
+
+        return self.is_valid_response(response)
+
     def set_positions(self, pos1: str, pos2: str) -> bool:
         """Sets positions in lobby"""
         response = self.lca_hook.put(

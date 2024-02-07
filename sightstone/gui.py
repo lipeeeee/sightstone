@@ -26,6 +26,37 @@ ROLE_TO_INT_MAPPING = {
 """Availability items"""
 AVAILABILITY_ITEMS = [SC.ONLINE_AVAILABILITY, SC.AWAY_AVAILABILITY, SC.MOBILE_AVAILABILITY, SC.OFFLINE_AVAILABILITY]
 
+"""Ranks"""
+RANK_ITEMS = {
+    "Iron": SC.IRON_RANK,
+    "Bronze": SC.BRONZE_RANK,
+    "Silver": SC.SILVER_RANK,
+    "Gold": SC.GOLD_RANK,
+    "Platinum": SC.PLATINUM_RANK,
+    "Emerald": SC.EMERALD_RANK,
+    "Diamond": SC.DIAMOND_RANK,
+    "Master": SC.MASTER_RANK,
+    "GrandMaster": SC.GRANDMASTER_RANK,
+    "Challenger": SC.CHALLENGER_RANK
+}
+QUEUE_ITEMS = {
+    "Solo/Duo": SC.SOLODUO_QUEUE_CODE,
+    "Flex 5v5": SC.FLEX_QUEUE_CODE,
+    "Twisted Treeline 3v3": SC.TWISTED_TREELINE_QUEUE_CODE,
+    "TFT": SC.TFT_QUEUE_CODE,
+    "Hyper Roll": SC.TFT_TURBO_QUEUE_CODE,
+    "Double Up": SC.TFT_DOUBLE_UP_QUEUE_CODE,
+    "Arena": SC.ARENA_QUEUE_CODE,
+    "None": str()
+}
+DIVISION_ITEMS = {
+    "I": SC.DIVISION_I,
+    "II": SC.DIVISION_II,
+    "III": SC.DIVISION_III,
+    "IV": SC.DIVISION_IV,
+    "None": str()
+}
+
 INSTANT_GROUP_WIDTH = WIDTH - (WIDTH // 3)
 
 """Friend groups"""
@@ -237,10 +268,31 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_input_text(tag="statusImportTxt", width=WIDTH - 30, height=100, multiline=True)
                     with dpg.group(horizontal=True):
                         dpg.add_button(label="Import Status", callback=lambda:sightstone_hook.import_status_txt(dpg.get_value("statusImportTxt")))
-                        dpg.add_radio_button(items=AVAILABILITY_ITEMS, tag="statusAvailability", horizontal=True, callback=lambda:sightstone_hook.import_status_availability(dpg.get_value("statusAvailability")))
+                        dpg.add_radio_button(tag="statusAvailability", items=AVAILABILITY_ITEMS, horizontal=True, callback=lambda:sightstone_hook.import_status_availability(dpg.get_value("statusAvailability")))
+                dpg.add_separator()
 
-                dpg.add_button(label="Remove Challenges",
-                                callback=sightstone_hook.remove_challenges)
+                with dpg.group():
+                    dpg.add_text("Rank:")
+                    with dpg.group(horizontal=True):
+                        dpg.add_combo(tag="rankId", items=list(RANK_ITEMS.keys()), default_value=list(RANK_ITEMS.keys())[0], width=100)
+                        dpg.add_combo(tag="divisionId", items=list(DIVISION_ITEMS.keys()), default_value=list(DIVISION_ITEMS.keys())[0], width=50)
+                        dpg.add_combo(tag="queueId", items=list(QUEUE_ITEMS.keys()), default_value=list(QUEUE_ITEMS.keys())[0], width=165)
+                        dpg.add_button(label="Import", callback=lambda:sightstone_hook.set_rank(
+                            rank=RANK_ITEMS[dpg.get_value("rankId")],
+                            division=DIVISION_ITEMS[dpg.get_value("divisionId")],
+                            queue=QUEUE_ITEMS[dpg.get_value("queueId")]
+                        ))
+                        dpg.add_button(label="Empty", callback=lambda:sightstone_hook.set_rank(
+                            rank="",
+                            division="",
+                            queue="",
+                        ))
+                dpg.add_separator()
+                
+                with dpg.group():
+                    dpg.add_text("Challenges:")
+                    dpg.add_button(label="Remove Challenges",
+                                    callback=sightstone_hook.remove_challenges)
 
             with dpg.tab(label="Info"):
                 pass
