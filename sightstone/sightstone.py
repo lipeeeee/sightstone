@@ -260,18 +260,36 @@ class Sightstone:
         """Imports both status text and availability"""
         return self.import_status_txt(text) and self.import_status_availability(availability)
 
-    def remove_challenges(self) -> bool:
-        """Remove League Challenges
-
-        Remove League of Legends challenges from profile
-        using RIOT's auth to LCA
-        """
+    def set_challenges(self, challenges: list) -> bool:
+        """Set challenges"""
+        self.get_player_preferences()
         response = self.lca_hook.post(
             path="lol-challenges/v1/update-player-preferences/",
-            json={"challengeIds": []},
+            json={"challengeIds": challenges}
         )
-
         return self.is_valid_response(response)
+
+    def copy_first_to_all_challenges(self) -> bool:
+        """Copies first challenge to all 3"""
+        preferences = self.get_player_preferences()
+        if len(preferences) == 0:
+            return False
+   
+        # If IndexError it means that there is not first challenge
+        try:
+            first_challenge = preferences["topChallenges"][0]["id"] 
+            return self.set_challenges([first_challenge, first_challenge, first_challenge])
+        except IndexError:
+            return False
+
+    def get_player_preferences(self) -> dict:
+        """Gets player preferences"""
+        response = self.lca_hook.get(
+            path="lol-challenges/v1/summary-player-data/local-player/",
+        )
+        if response:
+            return response.json()
+        return dict()
 
     def custom_game_json(self, game_mode: str, team_size: int, map_code: int) -> dict:
         """Returns the json for a custom game, given `gamemode`, `teamsize` and `map`"""

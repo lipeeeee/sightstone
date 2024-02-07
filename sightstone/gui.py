@@ -291,8 +291,18 @@ def init_gui(sightstone_hook: Sightstone):
                 
                 with dpg.group():
                     dpg.add_text("Challenges:")
-                    dpg.add_button(label="Remove Challenges",
-                                    callback=sightstone_hook.remove_challenges)
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Remove Challenges", callback=lambda:sightstone_hook.set_challenges([]))
+                        dpg.add_button(label="Copy 1st to all 3", callback=sightstone_hook.copy_first_to_all_challenges)
+                    with dpg.group(horizontal=True):
+                        dpg.add_text("Glitched:")
+                        dpg.add_button(label="0", callback=lambda:sightstone_hook.set_challenges([0, 0, 0]))
+                        dpg.add_button(label="1", callback=lambda:sightstone_hook.set_challenges([1, 1, 1]))
+                        dpg.add_button(label="2", callback=lambda:sightstone_hook.set_challenges([2, 2, 2]))
+                        dpg.add_button(label="3", callback=lambda:sightstone_hook.set_challenges([3, 3, 3]))
+                        dpg.add_button(label="4", callback=lambda:sightstone_hook.set_challenges([4, 4, 4]))
+                        dpg.add_button(label="5", callback=lambda:sightstone_hook.set_challenges([5, 5, 5]))
+
 
             with dpg.tab(label="Info"):
                 pass
