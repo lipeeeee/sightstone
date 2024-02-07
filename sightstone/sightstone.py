@@ -1,5 +1,6 @@
 # Main cheat engine
 
+from typing import Any
 import requests
 import webbrowser
 from sightstone.lca_hook import LeagueConnection
@@ -56,6 +57,33 @@ class Sightstone:
             return response.json()
         else:
             return list()
+
+    def get_champion_skins(self) -> dict[str, dict]:
+        """Get champion & their skins
+        
+        returned structure:
+            dict[champName][id] = json_id
+            dict[champName][key] = json_id / 100 
+            dict[champName][skins] = list(tuple(id, name))
+        """
+        response = requests.get("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/skins.json")
+        json = response.json()
+        current_champ_name = str()
+        champ_skins: dict[str, dict] = dict()
+
+        for id in json:
+            element = json[id]
+            if element["isBase"] == True:
+                current_champ_name = element["name"]
+                champ_skins[current_champ_name] = dict()
+                champ_skins[current_champ_name]["id"] = id
+                champ_skins[current_champ_name]["key"] = int(id) // 100
+                champ_skins[current_champ_name]["skins"] = list()
+                champ_skins[current_champ_name]["skins"].append((id, "Default"))
+            else:
+                champ_skins[current_champ_name]["skins"].append((id, element["name"]))
+
+        return champ_skins
 
     def get_current_patch(self) -> str:
         """Get current patch from external source"""
@@ -170,6 +198,24 @@ class Sightstone:
         response = self.lca_hook.put(
             path="lol-chat/v1/me/",
             json={"lol": {"masteryScore": str(mastery_points)}}
+        )
+
+        return self.is_valid_response(response)
+
+    def set_background(self, background_id: int) -> bool:
+        """Set's profile background splashart"""
+        response = self.lca_hook.post(
+            path="lol-summoner/v1/current-summoner/summoner-profile/",
+            json={"key":"backgroundSkinId", "value": background_id}
+        )
+
+        return self.is_valid_response(response)
+
+    def set_icon(self, icon_id: str) -> bool:
+        """Set icon"""
+        response = self.lca_hook.put(
+            path="lol-summoner/v1/current-summoner/icon/",
+            json={"profileIconId": icon_id}
         )
 
         return self.is_valid_response(response)

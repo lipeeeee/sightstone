@@ -1,6 +1,5 @@
 """Hook for league api HACK'ing"""
 
-import sys
 import re
 import requests
 import urllib3
@@ -259,6 +258,7 @@ class LeagueConnection:
             return response
         except Exception as e:
             print(f"ERROR IN RIOT_GET: {e}")
+            return None
 
     def post(self, path: str, data: dict | None = None, json: dict | list[dict] | None = None) -> Response | None:
         """Post into LCA"""
@@ -286,6 +286,21 @@ class LeagueConnection:
                 auth=self.auth, verify=False
             )
         except Exception:
+            return None
+
+    def riot_put(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:
+        """Riot-Level Put request"""
+        if not self.connected:
+            return None
+
+        try:
+            return requests.put(
+                self.build_url(path, self.riot_port),
+                data=data, json=json,
+                auth=self.riot_auth, verify=False,
+                headers=self.riot_header)
+        except Exception as e:
+            print(f"ERROR IN RIOT_PUT: {e}")
             return None
 
     def delete(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:

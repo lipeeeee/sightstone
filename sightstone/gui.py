@@ -2,6 +2,7 @@
 
 import string
 import random
+from threading import Thread
 import dearpygui.dearpygui as dpg
 from sightstone.background_thread import BackgroundThread
 import sightstone.sightstone_constants as SC
@@ -62,6 +63,10 @@ INSTANT_GROUP_WIDTH = WIDTH - (WIDTH // 3)
 """Friend groups"""
 friend_groups: list
 
+"""Champ skins"""
+global champ_skins
+champ_skins: dict[str, dict]
+
 ### Threads
 update_friend_groups_thread: BackgroundThread
 UPDATE_FRIEND_GROUPS_TIMEOUT = 5
@@ -84,10 +89,38 @@ def update_info_label(sightstone_hook: Sightstone):
     info += " | Connected to: " + str(sightstone_hook.get_current_user()) # User info
     dpg.set_value("info", info)
 
+update_champ_skins_thread: Thread
+def update_champ_skins(sightstone_hook: Sightstone):
+    """Update champ skins varaiable for skin & champion storing"""
+    global champ_skins
+    champ_skins = sightstone_hook.get_champion_skins()
+
+    # Sort
+    champ_skins = dict(sorted(champ_skins.items()))
+
+    # Update background collapse with info
+    for champ in champ_skins:
+        with dpg.tree_node(parent="backgroundCollapse", label=champ):
+            for skin in champ_skins[champ]["skins"]:
+                # How is this lambda working? I have no idea.
+                # it is probably something dumb with python JIT memory,
+                # if we dont set the button tag to skin[0], we get the wrong number on set_background(),
+                # even though we do not ever touch the button's tag.
+                # But if we "refresh" the memory with tag=skin[0] we get the right id to search.
+                # Any setting like _skin[0] will set `s` to that.
+                # DO NOT TOUCH THIS =P.
+                dpg.add_button(label=skin, tag=skin[0], callback=lambda s=skin: sightstone_hook.set_background(s))
+                
+
 # pylint: disable=R0915
 def init_gui(sightstone_hook: Sightstone):
     """Inits dearpygui window"""
     dpg.create_context()
+
+    # Create champ skins thread firstly
+    global update_champ_skins_thread 
+    update_champ_skins_thread = Thread(target=lambda:update_champ_skins(sightstone_hook), daemon=True)
+    update_champ_skins_thread.start()
 
     with dpg.window(
             label=SC.SIGHTSTONE,
@@ -311,38 +344,40 @@ def init_gui(sightstone_hook: Sightstone):
                         dpg.add_button(label="Submit", callback=lambda:sightstone_hook.set_mastery_points(dpg.get_value("masteryInput")))
                         dpg.add_button(label="Max", callback=lambda:sightstone_hook.set_mastery_points(-1))
                         dpg.add_button(label="None", callback=lambda:sightstone_hook.set_mastery_points(0))
+                dpg.add_separator()
+
+                with dpg.group():
+                    dpg.add_text("Icon:")
+                    with dpg.group(horizontal=True):
+                        dpg.add_input_int(tag="iconInput", width=125, min_value=0, min_clamped=True)
+                        dpg.add_button(label="Submit", callback=lambda:sightstone_hook.set_icon(dpg.get_value("iconInput")))
+                        dpg.add_button(label="Glitched", callback=lambda:sightstone_hook.set_icon("31"))
+                dpg.add_separator()
+
+                with dpg.collapsing_header(label="Backgrounds", tag="backgroundCollapse"):
+                    # This will be created at runtime by a champ skins thread
+                    pass
 
             with dpg.tab(label="Info"):
                 pass
+
             with dpg.tab(label="Champs"):
                 pass
+
             with dpg.tab(label="Skins"):
                 pass
+
             with dpg.tab(label="Misc"):
                 pass
+
             with dpg.tab(label="Custom"):
                 pass
+
             with dpg.tab(label="Settings"):
                 pass
-            with dpg.tab(label="Test"):
-                dpg.add_button(label="gamemodes",
-                                callback=sightstone_hook.get_queues)
-                dpg.add_button(label="create arurf",
-                                callback=lambda:sightstone_hook.create_lobby("450"))
-                dpg.add_button(label="pos",
-                                callback=lambda:sightstone_hook.set_positions(
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos1")],
-                                ROLE_TO_INT_MAPPING[dpg.get_value("pos2")]))
-                dpg.add_button(label="Reveal Lobby",
-                                callback=lambda:sightstone_hook.open_website(
-                                     website=dpg.get_value("revealWebsite"),
-                                     multi=True,
-                                     query=sightstone_hook.transform_participants_into_query(set(["lipe#69420", "MISSING KERIA ON#000", "naive#444", "wolfs child#EUW"]))))
-                dpg.add_button(label="get group",
-                               callback=sightstone_hook.get_groups)
 
-                dpg.add_button(label="QUEUE", callback=sightstone_hook.get_queues)
-                dpg.add_button(label="muselfg", callback=lambda:sightstone_hook.search_myself(SC.OP_GG))
+            with dpg.tab(label="Test"):
+                dpg.add_button(label="Get champ skins", callback=sightstone_hook.get_champion_skins)
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
