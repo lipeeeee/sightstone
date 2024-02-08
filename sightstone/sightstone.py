@@ -96,11 +96,21 @@ class Sightstone:
 
     def get_current_user(self) -> str | None:
         """Get current client user"""
-        response = self.lca_hook.get(path="lol-summoner/v1/current-summoner/",)
+        response = self.lca_hook.get(path="lol-summoner/v1/current-summoner/")
 
         if response and self.is_valid_response(response):
             return response.json()["gameName"] + "#" + response.json()["tagLine"]
         return None
+
+    def get_player_info(self, name: str) -> dict:
+        """Gets player info, given a name"""
+        response = self.lca_hook.get(
+            path=f"lol-summoner/v1/summoners?name={name.replace('#', self.URI_HASHTAG)}"
+        )
+        
+        if response != None:
+            return response.json()
+        return dict()
 
     def start_queue(self) -> bool:
         """Start queue"""

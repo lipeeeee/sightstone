@@ -2,6 +2,7 @@
 
 import string
 import random
+import json
 from threading import Thread
 import dearpygui.dearpygui as dpg
 from sightstone.background_thread import BackgroundThread
@@ -359,7 +360,19 @@ def init_gui(sightstone_hook: Sightstone):
                     pass
 
             with dpg.tab(label="Info"):
-                pass
+                dpg.add_text("Player Name(name#tag):")
+                block_width = WIDTH - (WIDTH // 5)
+                with dpg.group(horizontal=True):
+                    def __search_helper(name: str):
+                        if name.find("#") == -1:
+                            return name + "#" + sightstone_hook.lca_hook.region
+                        else:
+                            return name
+                    dpg.add_input_text(tag="infoSearch", width=block_width)
+                    dpg.add_button(label="Submit", callback=lambda:dpg.set_value("infoOutput", json.dumps(sightstone_hook.get_player_info(__search_helper(dpg.get_value("infoSearch"))), indent=2)))
+                with dpg.group(horizontal=True):
+                    dpg.add_input_text(tag="infoOutput", multiline=True, width=block_width, height=HEIGHT - (HEIGHT // 3), enabled=False)
+                    dpg.add_button(label="Myself", callback=lambda:dpg.set_value("infoOutput", json.dumps(sightstone_hook.get_player_info(__search_helper(str(sightstone_hook.get_current_user()))), indent=2)))
 
             with dpg.tab(label="Champs"):
                 pass
