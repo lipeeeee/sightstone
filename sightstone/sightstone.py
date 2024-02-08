@@ -135,8 +135,26 @@ class Sightstone:
         """Invite to lobby a summoner id"""
         # Have to use a custom POST request because this endpoint only accepts vectors
         response = self.lca_hook.post(
-            "lol-lobby/v2/lobby/invitations/",
+            path="lol-lobby/v2/lobby/invitations/",
             json=[{"toSummonerId": summoner_id}])
+
+        return self.is_valid_response(response)
+
+    def send_friend_invite(self, game_name: str, tag_line: str) -> bool:
+        """Send riot friend invite"""
+        response = self.lca_hook.post(
+            path="lol-chat/v2/friend-requests/",
+            json={"gameName": game_name, "tagLine": tag_line}
+        )
+
+        return self.is_valid_response(response)
+
+    def block_player(self, summoner_id: str) -> bool:
+        """Block player"""
+        response = self.lca_hook.post(
+            path="lol-chat/v1/blocked-players/",
+            json={"summonerId": summoner_id}
+        )
 
         return self.is_valid_response(response)
 
@@ -167,7 +185,7 @@ class Sightstone:
 
         response = self.lca_hook.get(path="lol-lobby/v2/lobby/matchmaking/search-state/")
         if response and response.json()["searchState"] == SC.QUEUE_FOUND:
-            r = self.lca_hook.post(path="lol-matchmaking/v1/ready-check/accept/")
+            self.lca_hook.post(path="lol-matchmaking/v1/ready-check/accept/")
 
     def get_available_bots(self) -> list[dict]:
         """Gets available bots"""

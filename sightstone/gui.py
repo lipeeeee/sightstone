@@ -373,6 +373,15 @@ def init_gui(sightstone_hook: Sightstone):
                 with dpg.group(horizontal=True):
                     dpg.add_input_text(tag="infoOutput", multiline=True, width=block_width, height=HEIGHT - (HEIGHT // 3), enabled=False)
                     dpg.add_button(label="Myself", callback=lambda:dpg.set_value("infoOutput", json.dumps(sightstone_hook.get_player_info(__search_helper(str(sightstone_hook.get_current_user()))), indent=2)))
+                with dpg.group(horizontal=True):
+                    def __get_atr(atr, input):
+                        try:
+                            return json.loads(input)[atr]
+                        except Exception:
+                            return ""
+                    dpg.add_button(label="Invite to lobby", callback=lambda:sightstone_hook.invite_to_lobby(__get_atr("summonerId", dpg.get_value("infoOutput"))))
+                    dpg.add_button(label="Send friend invite", callback=lambda:sightstone_hook.send_friend_invite(__get_atr("gameName", dpg.get_value("infoOutput")), __get_atr("tagLine", dpg.get_value("infoOutput"))))
+                    dpg.add_button(label="Add to block list", callback=lambda:sightstone_hook.block_player(__get_atr("summonerId", dpg.get_value("infoOutput"))))
 
             with dpg.tab(label="Champs"):
                 pass
