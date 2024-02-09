@@ -67,10 +67,7 @@ friend_groups: list
 
 """Champ skins"""
 champ_skins: dict[str, dict]
-
-"""Champ personal data"""
-champ_personal_data: dict[str, dict[str, dict]] # champ_name: {"minimal": dict, "mastery": dict}
-number_owned_champs: int
+skins_name_by_id: dict[str, str]
 
 ### Threads
 update_friend_groups_thread: BackgroundThread
@@ -97,8 +94,8 @@ def update_info_label(sightstone_hook: Sightstone):
 update_champ_skins_thread: Thread
 def update_champ_skins(sightstone_hook: Sightstone):
     """Update champ skins varaiable for skin & champion storing"""
-    global champ_skins
-    champ_skins = sightstone_hook.get_champion_skins()
+    global champ_skins, skins_name_by_id
+    champ_skins, skins_name_by_id = sightstone_hook.get_champion_skins()
 
     # Sort
     champ_skins = dict(sorted(champ_skins.items()))
@@ -117,14 +114,10 @@ def update_champ_skins(sightstone_hook: Sightstone):
                 dpg.add_button(label=skin, tag=skin[0], callback=lambda s=skin: sightstone_hook.set_background(s))
 
 update_champ_personal_data_thread: BackgroundThread
-UPDATE_CHAMP_PERSONAL_TIMEOUT = 4
+UPDATE_CHAMP_PERSONAL_TIMEOUT = 3
 SLOW_UPDATE_CHAMP_PERSONAL_TIMEOUT = 20
 def update_champ_personal_data(sightstone_hook: Sightstone, sort_dict="minimal", sort_key="name"):
     """Threaded function to update `champ_personal_data` & `number_owned_champs`"""
-    global champ_personal_data
-    global number_owned_champs
-    global update_champ_personal_data_thread 
-
     # Get info from lcu
     session_dict = sightstone_hook.get_current_session()
     if not session_dict or len(session_dict) == 0:
@@ -219,6 +212,82 @@ Tokens Earned: {champ_obj["mastery"]["tokensEarned"]}"""
         dpg.add_input_text(
             parent="champContainerChamp", default_value=champ_to_text, enabled=False, multiline=True,
             width=WIDTH, height=decided_height, tag=champ_tag)
+
+update_skins_personal_data_thread: BackgroundThread
+UPDATE_SKIN_PERSONAL_TIMEOUT = 3
+SLOW_UPDATE_SKIN_PERSONAL_TIMEOUT = 25
+def update_skins_personal_data(sightstone_hook: Sightstone, sort_key="name"):
+    """Threaded function to update personal skin data"""
+    global skins_name_by_id
+    skin_dict = sightstone_hook.get_player_skins()
+    if not skin_dict or len(skin_dict) == 0:
+        update_skins_personal_data_thread.time_between_runs = UPDATE_SKIN_PERSONAL_TIMEOUT
+        return
+    update_skins_personal_data_thread.time_between_runs = SLOW_UPDATE_SKIN_PERSONAL_TIMEOUT 
+
+    if not skins_name_by_id or len(skins_name_by_id) == 0:
+        return
+
+    # Load data
+    skin_personal_data = list[dict]()
+    vintage_skins = 0
+    for skin in skin_dict:
+        try:
+            skin["name"] = skins_name_by_id[str(skin["itemId"])]
+            skin_personal_data.append(skin)
+            if bool(skin["payload"]["isVintage"]):
+                vintage_skins += 1
+        except KeyError:
+            # When key error is thrown it is because of a chroma or prestige edition seraphine multiple versions, just ignore those
+            # print("KEY ERROR: LOADING SKINS - POSSIBLE PRESTIGE SERAPHINE OR CHROMA! id:", e)
+            pass
+    
+    # Sort 
+    skin_personal_data = sorted(skin_personal_data, key=lambda x: x[sort_key])
+    dpg.hide_item("loadingSkin")
+
+    # Import into dearpygui
+    # Check if we need to create the skin owned label
+    if not dpg.get_value("skinOwned"):
+        with dpg.group(horizontal=True, parent="skinContainer"):
+            def __delete_and_update(sightstone_hook, sort_key):
+                dpg.delete_item("skinContainerSkin")
+                update_skins_personal_data(sightstone_hook, sort_key=sort_key)
+            dpg.add_text(f"Sort:")
+            dpg.add_button(label="ID", callback=lambda:__delete_and_update(sightstone_hook, sort_key="itemId"))
+            dpg.add_button(label="Alphabetically", callback=lambda:__delete_and_update(sightstone_hook, sort_key="name"))
+            dpg.add_button(label="Purchase Date", callback=lambda:__delete_and_update(sightstone_hook, sort_key="purchaseDate"))
+        dpg.add_separator(parent="skinContainer")
+        with dpg.group(horizontal=True, parent="skinContainer"):
+            dpg.add_text(f"Skins owned: {len(skin_personal_data)} | Vintage: {vintage_skins}", tag="skinOwned")
+        dpg.add_separator(parent="skinContainer")
+    else:
+        dpg.set_value("skinOwned", f"Skins owned: {len(skin_personal_data)} | Vintage: {vintage_skins}")
+
+    for skin in skin_personal_data:
+        # Don't do anything if champ already exists in container
+        skin_tag = f"{skin['name']}ChampContainer"
+        if dpg.get_value(skin_tag):
+            continue
+
+        # Generate text
+        skin_to_text = f"""Name: {skin['name']}
+Purchase Date: {datetime.datetime.strptime(str(skin['purchaseDate']), "%Y%m%dT%H%M%S.%fZ").strftime("%Y-%m-%d %H:%M:%S")}
+ID: {skin['itemId']}
+Is Vintage: {skin['payload']['isVintage']}
+Inventory Type: {skin['inventoryType']}
+Ownership Type: {skin['ownershipType']}
+Quantity: {skin['quantity']}
+UUID: {skin['uuid']}"""
+        
+        # Create group if not existant
+        if not dpg.does_item_exist("skinContainerSkin"):
+            dpg.add_group(tag="skinContainerSkin", parent="skinContainer")
+
+        # Create skin data in ui
+        dpg.add_input_text(
+            parent="skinContainerSkin", default_value=skin_to_text, enabled=False, multiline=True,
+            width=WIDTH, height=110, tag=skin_tag)
 
 # pylint: disable=R0915
 def init_gui(sightstone_hook: Sightstone):
@@ -496,7 +565,9 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(label="Still loading personal champ data, Click to force load", tag="loadingChamp", callback=lambda:update_champ_personal_data(sightstone_hook))
 
             with dpg.tab(label="Skins"):
-                pass
+                with dpg.group(tag="skinContainer"):
+                    # Everyting about this is only rendered at runtime in update_skins_personal_data()
+                    dpg.add_button(label="Still loading personal skin data, Click to force load", tag="loadingSkin", callback=lambda:update_skins_personal_data(sightstone_hook))
 
             with dpg.tab(label="Misc"):
                 pass
@@ -508,21 +579,7 @@ def init_gui(sightstone_hook: Sightstone):
                 pass
 
             with dpg.tab(label="Test"):
-                def __get_champ_data_helper():
-                    try:
-                        summoner_id = sightstone_hook.get_current_session()["summonerId"]
-                        return sightstone_hook.get_champion_data(summoner_id)
-                    except Exception:
-                        return dict()
-                def __count_champs(champ_dict):
-                    try:
-                        return sightstone_hook.count_champions_owned(champ_dict)
-                    except Exception:
-                        return -1 
-                dpg.add_button(label="Get champ skins", callback=sightstone_hook.get_champion_skins)
-                dpg.add_button(label="Get champ data", callback=__get_champ_data_helper)
-                dpg.add_button(label="Count champs", callback=lambda:print(__count_champs(__get_champ_data_helper())))
-                dpg.add_button(label="Get session", callback=sightstone_hook.get_current_session)
+                dpg.add_button(label="{}", callback=lambda:update_skins_personal_data(sightstone_hook))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
@@ -572,4 +629,13 @@ def start_threads(sightstone_hook: Sightstone):
         description="gui.update_champ_personal_data_thread"
     )
     update_champ_personal_data_thread.start()
+
+    global update_skins_personal_data_thread
+    update_skins_personal_data_thread = BackgroundThread(
+        fn_to_run=lambda:update_skins_personal_data(sightstone_hook),
+        time_between_runs=UPDATE_SKIN_PERSONAL_TIMEOUT,
+        daemon=True,
+        description="gui.update_skin_personal_data_thread"
+    )
+    update_skins_personal_data_thread.start()
 

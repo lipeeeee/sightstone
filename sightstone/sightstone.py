@@ -57,21 +57,24 @@ class Sightstone:
         else:
             return list()
 
-    def get_champion_skins(self) -> dict[str, dict]:
+    def get_champion_skins(self) -> tuple[dict[str, dict], dict[str, str]]:
         """Get champion & their skins
         
         returned structure:
-            dict[champName][id] = json_id
-            dict[champName][key] = json_id / 100 
-            dict[champName][skins] = list(tuple(id, name))
+            dict1[champName][id] = json_id
+            dict1[champName][key] = json_id / 100 
+            dict1[champName][skins] = list(tuple(id, name))
+            dict2[id] = name
         """
         response = requests.get("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/skins.json")
         json = response.json()
         current_champ_name = str()
         champ_skins: dict[str, dict] = dict()
+        skins_name_by_id: dict[str, str] = dict()
 
         for id in json:
             element = json[id]
+            skins_name_by_id[id] = element["name"]
             if element["isBase"] == True:
                 current_champ_name = element["name"]
                 champ_skins[current_champ_name] = dict()
@@ -82,7 +85,7 @@ class Sightstone:
             else:
                 champ_skins[current_champ_name]["skins"].append((id, element["name"]))
 
-        return champ_skins
+        return (champ_skins, skins_name_by_id)
 
     def get_current_patch(self) -> str:
         """Get current patch from external source"""
@@ -100,6 +103,14 @@ class Sightstone:
         if response and self.is_valid_response(response):
             return response.json()["gameName"] + "#" + response.json()["tagLine"]
         return None
+
+    def get_player_skins(self) -> dict:
+        """Get player champion skins"""
+        response = self.lca_hook.get(path="lol-inventory/v2/inventory/CHAMPION_SKIN/")
+
+        if response:
+            return response.json()
+        return dict()
 
     def get_current_session(self) -> dict:
         """Get current session data"""

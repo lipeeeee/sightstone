@@ -20,5 +20,3 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pywin32
-      - name: Run driver.py 
-        run: python3 driver.py
