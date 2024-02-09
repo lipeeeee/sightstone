@@ -29,7 +29,7 @@ class Sightstone:
         self.lca_hook = LeagueConnection()
         self.accept_listener = BackgroundThread(
             fn_to_run=self.queue_accept, time_between_runs=self.AUTO_ACCEPT_QUEUE_TIMEOUT,
-            daemon=True, description="QueueAccept"
+            daemon=True, description="sightstone.accept_listener"
         )
         self.__accept_listener_running = False
 
@@ -102,6 +102,14 @@ class Sightstone:
             return response.json()["gameName"] + "#" + response.json()["tagLine"]
         return None
 
+    def get_current_session(self) -> dict:
+        """Get current session data"""
+        response = self.lca_hook.get(path="lol-login/v1/session/")
+
+        if response:
+            return response.json()
+        return dict()
+
     def get_player_info(self, name: str) -> dict:
         """Gets player info, given a name"""
         response = self.lca_hook.get(
@@ -109,6 +117,43 @@ class Sightstone:
         )
         
         if response != None:
+            return response.json()
+        return dict()
+
+    def count_champions_owned(self, optional_champ_dict: dict | None = None) -> int:
+        """Count champions owned"""
+        champ_dict: dict
+        if optional_champ_dict:
+            champ_dict = optional_champ_dict
+        else:
+            champ_dict = self.get_champion_data(self.get_current_session()["summonerId"])
+
+        if not champ_dict or len(champ_dict) == 0:
+            return -1
+        
+        count = 0
+        for champ in champ_dict:
+            if bool(champ["ownership"]["owned"]):
+                count += 1
+        return count
+
+    def get_champion_data(self, summoner_id: str) -> dict:
+        """Get minimal champion data"""
+        response = self.lca_hook.get(
+            path=f"lol-champions/v1/inventories/{summoner_id}/champions-minimal/"
+        )
+
+        if response:
+            return response.json()
+        return dict()
+
+    def get_champion_mastery(self, summoner_id: str) -> dict:
+        """Get champion mastery data"""
+        response = self.lca_hook.get(
+            path=f"lol-collections/v1/inventories/{summoner_id}/champion-mastery/"
+        )
+
+        if response:
             return response.json()
         return dict()
 

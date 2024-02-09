@@ -65,8 +65,11 @@ INSTANT_GROUP_WIDTH = WIDTH - (WIDTH // 3)
 friend_groups: list
 
 """Champ skins"""
-global champ_skins
 champ_skins: dict[str, dict]
+
+"""Champ personal data"""
+champ_personal_data: dict[str, dict[str, dict]] # champ_name: {"minimal": dict, "mastery": dict}
+number_owned_champs: int
 
 ### Threads
 update_friend_groups_thread: BackgroundThread
@@ -111,7 +114,36 @@ def update_champ_skins(sightstone_hook: Sightstone):
                 # Any setting like _skin[0] will set `s` to that.
                 # DO NOT TOUCH THIS =P.
                 dpg.add_button(label=skin, tag=skin[0], callback=lambda s=skin: sightstone_hook.set_background(s))
-                
+
+champ_personal_data_update_thread: BackgroundThread
+UPDATE_CHAMP_PERSONAL_TIMEOUT = 15
+def update_champ_personal_data(sightstone_hook: Sightstone):
+    """Threaded function to update `champ_personal_data` & `number_owned_champs`"""
+    global champ_personal_data
+    global number_owned_champs
+
+    # Get info from lcu
+    session_dict = sightstone_hook.get_current_session()
+    if not session_dict or len(session_dict) == 0:
+        return
+    current_summoner_id = session_dict["summonerId"]
+    champion_data_lcu = sightstone_hook.get_champion_data(current_summoner_id)
+    mastery_data_lcu = sightstone_hook.get_champion_mastery(current_summoner_id)
+
+    # Reset data
+    champ_personal_data = dict[str, dict[str, dict]]()
+    number_owned_champs = 0
+    id_to_name_map = dict[str, str]()
+
+    # Load data
+    for element_champ in champion_data_lcu:
+        id_to_name_map[element_champ["id"]] = element_champ["name"]
+        champ_personal_data[element_champ["name"]] = dict()
+        champ_personal_data[element_champ["name"]]["minimal"] = element_champ
+        if bool(element_champ["ownership"]["owned"]):
+            number_owned_champs += 1
+    for element_mastery in mastery_data_lcu:
+        champ_personal_data[id_to_name_map[element_mastery["championId"]]]["mastery"] = element_mastery
 
 # pylint: disable=R0915
 def init_gui(sightstone_hook: Sightstone):
@@ -371,7 +403,7 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_input_text(tag="infoSearch", width=block_width)
                     dpg.add_button(label="Submit", callback=lambda:dpg.set_value("infoOutput", json.dumps(sightstone_hook.get_player_info(__search_helper(dpg.get_value("infoSearch"))), indent=2)))
                 with dpg.group(horizontal=True):
-                    dpg.add_input_text(tag="infoOutput", multiline=True, width=block_width, height=HEIGHT - (HEIGHT // 3), enabled=False)
+                    dpg.add_input_text(tag="infoOutput", multiline=True, width=block_width, height=HEIGHT - (HEIGHT // 3) - 5, enabled=False)
                     dpg.add_button(label="Myself", callback=lambda:dpg.set_value("infoOutput", json.dumps(sightstone_hook.get_player_info(__search_helper(str(sightstone_hook.get_current_user()))), indent=2)))
                 with dpg.group(horizontal=True):
                     def __get_atr(atr, input):
@@ -399,7 +431,21 @@ def init_gui(sightstone_hook: Sightstone):
                 pass
 
             with dpg.tab(label="Test"):
+                def __get_champ_data_helper():
+                    try:
+                        summoner_id = sightstone_hook.get_current_session()["summonerId"]
+                        return sightstone_hook.get_champion_data(summoner_id)
+                    except Exception:
+                        return dict()
+                def __count_champs(champ_dict):
+                    try:
+                        return sightstone_hook.count_champions_owned(champ_dict)
+                    except Exception:
+                        return -1 
                 dpg.add_button(label="Get champ skins", callback=sightstone_hook.get_champion_skins)
+                dpg.add_button(label="Get champ data", callback=__get_champ_data_helper)
+                dpg.add_button(label="Count champs", callback=lambda:print(__count_champs(__get_champ_data_helper())))
+                dpg.add_button(label="Get session", callback=sightstone_hook.get_current_session)
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
@@ -428,7 +474,7 @@ def start_threads(sightstone_hook: Sightstone):
         fn_to_run=lambda:update_friend_groups(sightstone_hook),
         time_between_runs=UPDATE_FRIEND_GROUPS_TIMEOUT,
         daemon=True,
-        description="UpdateFriendGroupThread"
+        description="gui.update_friend_groups_thread"
     )
     update_friend_groups_thread.start()
 
@@ -437,7 +483,16 @@ def start_threads(sightstone_hook: Sightstone):
         fn_to_run=lambda:update_info_label(sightstone_hook),
         time_between_runs=UPDATE_INFO_LABEL_TIMEOUT,
         daemon=True,
-        description="UpdateInfoLabelThread"
+        description="gui.update_info_label_thread"
     )
     update_info_label_thread.start()
+
+    global update_champ_skins_thread
+    update_champ_skins_thread = BackgroundThread(
+        fn_to_run=lambda:update_champ_personal_data(sightstone_hook),
+        time_between_runs=UPDATE_CHAMP_PERSONAL_TIMEOUT,
+        daemon=True,
+        description="gui.update_champ_skins_thread"
+    )
+    update_champ_skins_thread.start()
 

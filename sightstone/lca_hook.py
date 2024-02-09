@@ -86,7 +86,7 @@ class LeagueConnection:
 
         # Start LCA Listener
         self.listener = BackgroundThread(
-            fn_to_run=self.listen, time_between_runs=self.LISTEN_TIMEOUT, daemon=True
+            fn_to_run=self.listen, time_between_runs=self.LISTEN_TIMEOUT, daemon=True, description="lca_hook.listen"
         )
         self.listener.start()
 
