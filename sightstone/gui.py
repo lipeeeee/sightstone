@@ -3,6 +3,7 @@
 import string
 import random
 import json
+import datetime
 from threading import Thread
 import dearpygui.dearpygui as dpg
 from sightstone.background_thread import BackgroundThread
@@ -115,17 +116,21 @@ def update_champ_skins(sightstone_hook: Sightstone):
                 # DO NOT TOUCH THIS =P.
                 dpg.add_button(label=skin, tag=skin[0], callback=lambda s=skin: sightstone_hook.set_background(s))
 
-champ_personal_data_update_thread: BackgroundThread
-UPDATE_CHAMP_PERSONAL_TIMEOUT = 15
-def update_champ_personal_data(sightstone_hook: Sightstone):
+update_champ_personal_data_thread: BackgroundThread
+UPDATE_CHAMP_PERSONAL_TIMEOUT = 4
+SLOW_UPDATE_CHAMP_PERSONAL_TIMEOUT = 20
+def update_champ_personal_data(sightstone_hook: Sightstone, sort_dict="minimal", sort_key="name"):
     """Threaded function to update `champ_personal_data` & `number_owned_champs`"""
     global champ_personal_data
     global number_owned_champs
+    global update_champ_personal_data_thread 
 
     # Get info from lcu
     session_dict = sightstone_hook.get_current_session()
     if not session_dict or len(session_dict) == 0:
+        update_champ_personal_data_thread.time_between_runs = UPDATE_CHAMP_PERSONAL_TIMEOUT
         return
+    update_champ_personal_data_thread.time_between_runs = SLOW_UPDATE_CHAMP_PERSONAL_TIMEOUT
     current_summoner_id = session_dict["summonerId"]
     champion_data_lcu = sightstone_hook.get_champion_data(current_summoner_id)
     mastery_data_lcu = sightstone_hook.get_champion_mastery(current_summoner_id)
@@ -135,15 +140,85 @@ def update_champ_personal_data(sightstone_hook: Sightstone):
     number_owned_champs = 0
     id_to_name_map = dict[str, str]()
 
-    # Load data
+    # Load owned champs data
     for element_champ in champion_data_lcu:
+        if not bool(element_champ["ownership"]["owned"]):
+            continue
         id_to_name_map[element_champ["id"]] = element_champ["name"]
         champ_personal_data[element_champ["name"]] = dict()
         champ_personal_data[element_champ["name"]]["minimal"] = element_champ
-        if bool(element_champ["ownership"]["owned"]):
-            number_owned_champs += 1
+        number_owned_champs += 1
     for element_mastery in mastery_data_lcu:
+        if element_mastery["championId"] not in id_to_name_map:
+            continue
         champ_personal_data[id_to_name_map[element_mastery["championId"]]]["mastery"] = element_mastery
+
+    # Sort 
+    # listen... i don't know at this point, this is all to sort the champ_personal_data dict
+    # alphabetically with strings and ascending with numbers.
+    # There has to be a better way but i don't care enough to find it,
+    # this is already fast.
+    sorted_items = sorted(champ_personal_data.items(), key=lambda x: (isinstance(x[1].get(sort_dict, {}).get(sort_key), str), x[1].get(sort_dict, {}).get(sort_key, float('inf')) if isinstance(x[1].get(sort_dict, {}).get(sort_key), str) else -x[1].get(sort_dict, {}).get(sort_key, float('-inf'))))
+    champ_personal_data = {key: value for key, value in sorted_items}
+    
+    dpg.hide_item("loadingChamp")
+
+    # Import into dearpygui
+    # Check if we need to create the champ owned label
+    if not dpg.get_value("champOwned"):
+        with dpg.group(horizontal=True, parent="champContainer"):
+            def __delete_and_update(sightstone_hook, sort_dict, sort_key):
+                dpg.delete_item("champContainerChamp")
+                update_champ_personal_data(sightstone_hook, sort_dict=sort_dict, sort_key=sort_key)
+            dpg.add_text(f"Sort:")
+            dpg.add_button(label="ID", callback=lambda:__delete_and_update(sightstone_hook, sort_dict="minimal", sort_key="id"))
+            dpg.add_button(label="Alphabetically", callback=lambda:__delete_and_update(sightstone_hook, sort_dict="minimal", sort_key="name"))
+            dpg.add_button(label="Champion Points", callback=lambda:__delete_and_update(sightstone_hook, sort_dict="mastery", sort_key="championPoints"))
+            dpg.add_button(label="Purchase Date", callback=lambda:__delete_and_update(sightstone_hook, sort_dict="minimal", sort_key="purchased"))
+            dpg.add_button(label="Last Play Date", callback=lambda:__delete_and_update(sightstone_hook, sort_dict="mastery", sort_key="lastPlayTime"))
+        dpg.add_separator(parent="champContainer")
+        with dpg.group(horizontal=True, parent="champContainer"):
+            dpg.add_text(f"Champions owned: {number_owned_champs}", tag="champOwned")
+        dpg.add_separator(parent="champContainer")
+    else:
+        dpg.set_value("champOwned", f"Champions owned: {number_owned_champs}")
+
+    big_height = 175
+    small_height = 45
+    for champ in champ_personal_data:
+        # Don't do anything if champ already exists in container
+        champ_tag = f"{champ}ChampContainer"
+        if dpg.get_value(champ_tag):
+            continue
+
+        champ_obj = champ_personal_data[champ]
+        # Check if it has only minimal dictionary
+        if len(champ_obj) == 1:
+            decided_height = small_height
+            champ_to_text = f"""Name: {champ}
+ID: {champ_obj["minimal"]["id"]}
+Purchase Date: {datetime.datetime.fromtimestamp(int(str(champ_obj["minimal"]["purchased"])[:-3])).strftime("%Y-%m-%d %H:%M:%S")}"""
+        else:
+            decided_height = big_height
+            champ_to_text = f"""Name: {champ}
+ID: {champ_obj["minimal"]["id"]}
+Purchase Date: {datetime.datetime.fromtimestamp(int(str(champ_obj["minimal"]["purchased"])[:-3])).strftime("%Y-%m-%d %H:%M:%S")}
+Champion Level: {champ_obj["mastery"]["championLevel"]}
+Highest Grade: {champ_obj["mastery"]["highestGrade"]}
+Champion Points: {champ_obj["mastery"]["championPoints"]}
+Formatted Champion Points: {champ_obj["mastery"]["formattedChampionPoints"]}
+Champion Points Since Last Level: {champ_obj["mastery"]["championPointsSinceLastLevel"]}
+Champion Points Until Next Level: {champ_obj["mastery"]["championPointsUntilNextLevel"]}
+Chest Granted: {champ_obj["mastery"]["chestGranted"]}
+Formatted Mastery Goal: {champ_obj["mastery"]["formattedMasteryGoal"]}
+Last Play Time: {datetime.datetime.fromtimestamp(int(str(champ_obj["mastery"]["lastPlayTime"])[:-3])).strftime("%Y-%m-%d %H:%M:%S")}
+Tokens Earned: {champ_obj["mastery"]["tokensEarned"]}"""
+        
+        if not dpg.does_item_exist("champContainerChamp"):
+            dpg.add_group(tag="champContainerChamp", parent="champContainer")
+        dpg.add_input_text(
+            parent="champContainerChamp", default_value=champ_to_text, enabled=False, multiline=True,
+            width=WIDTH, height=decided_height, tag=champ_tag)
 
 # pylint: disable=R0915
 def init_gui(sightstone_hook: Sightstone):
@@ -416,7 +491,9 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(label="Add to block list", callback=lambda:sightstone_hook.block_player(__get_atr("summonerId", dpg.get_value("infoOutput"))))
 
             with dpg.tab(label="Champs"):
-                pass
+                with dpg.group(tag="champContainer"):
+                    # Everyting about this is only rendered at runtime in update_champ_personal_data()
+                    dpg.add_button(label="Still loading personal champ data, Click to force load", tag="loadingChamp", callback=lambda:update_champ_personal_data(sightstone_hook))
 
             with dpg.tab(label="Skins"):
                 pass
@@ -487,12 +564,12 @@ def start_threads(sightstone_hook: Sightstone):
     )
     update_info_label_thread.start()
 
-    global update_champ_skins_thread
-    update_champ_skins_thread = BackgroundThread(
+    global update_champ_personal_data_thread
+    update_champ_personal_data_thread = BackgroundThread(
         fn_to_run=lambda:update_champ_personal_data(sightstone_hook),
         time_between_runs=UPDATE_CHAMP_PERSONAL_TIMEOUT,
         daemon=True,
-        description="gui.update_champ_skins_thread"
+        description="gui.update_champ_personal_data_thread"
     )
-    update_champ_skins_thread.start()
+    update_champ_personal_data_thread.start()
 

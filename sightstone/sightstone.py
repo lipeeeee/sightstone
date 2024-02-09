@@ -1,6 +1,5 @@
 # Main cheat engine
 
-from typing import Any
 import requests
 import webbrowser
 from sightstone.lca_hook import LeagueConnection

@@ -1,4 +1,4 @@
-d:
+run:
 		python3 driver.py
 build:
 		del dist
