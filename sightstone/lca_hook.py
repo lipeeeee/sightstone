@@ -151,12 +151,15 @@ class LeagueConnection:
         return self.make_header(self.riot_port, self.riot_token)
 
     @property
+    def complete_league_path(self):
+        """Complete league EXE path"""
+        return f"{self.install_dir} Games\\League of Legends\\{self.app_name}.exe"
+
+    @property
     def league_version(self) -> tuple[int, int, int, int] | None:
         """Get's league executable file version"""
-        if not self.connected:
-            return None
         try:
-            info = GetFileVersionInfo(f"{self.install_dir} Games\\League of Legends\\{self.app_name}.exe", "\\")
+            info = GetFileVersionInfo(self.complete_league_path, "\\")
             ms = info["FileVersionMS"]
             ls = info["FileVersionLS"]
             return HIWORD(ms), LOWORD(ms), HIWORD(ls), LOWORD(ls)

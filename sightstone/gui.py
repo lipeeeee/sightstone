@@ -235,7 +235,7 @@ def update_skins_personal_data(sightstone_hook: Sightstone, sort_key="name"):
         try:
             skin["name"] = skins_name_by_id[str(skin["itemId"])]
             skin_personal_data.append(skin)
-            if bool(skin["payload"]["isVintage"]):
+            if skin['payload'] and bool(skin["payload"]["isVintage"]):
                 vintage_skins += 1
         except KeyError:
             # When key error is thrown it is because of a chroma or prestige edition seraphine multiple versions, just ignore those
