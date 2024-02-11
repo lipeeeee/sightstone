@@ -105,6 +105,14 @@ class Sightstone:
             return response.json()["gameName"] + "#" + response.json()["tagLine"]
         return None
 
+    def get_all_friend_requests(self) -> dict:
+        """Get's all friend requests"""
+        response = self.lca_hook.get(path="lol-chat/v1/friend-requests/")
+
+        if response:
+            return response.json()
+        return dict()
+
     def get_player_skins(self) -> dict:
         """Get player champion skins"""
         response = self.lca_hook.get(path="lol-inventory/v2/inventory/CHAMPION_SKIN/")
@@ -205,6 +213,39 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
+    def accept_friend_request(self, request_id: str) -> bool:
+        """Accept's friend request"""
+        response = self.lca_hook.put(
+            path=f"lol-chat/v1/friend-requests/{request_id}",
+            json={"direction": "both"}
+        )
+
+        return self.is_valid_response(response)
+
+    def reject_friend_request(self, request_id: str) -> bool:
+        """Reject's friend request"""
+        response = self.lca_hook.delete(
+            path=f"lol-chat/v1/friend-requests/{request_id}",
+        )
+
+        return self.is_valid_response(response)
+
+    def accept_all_friend_requests(self) -> int:
+        """Accept's all friend requests"""
+        all_requests: dict = self.get_all_friend_requests()
+        
+        for request in all_requests:
+            self.accept_friend_request(request["pid"])
+        return len(all_requests)
+
+    def reject_all_friend_request(self) -> int:
+        """Reject's all friend requests"""
+        all_requests: dict = self.get_all_friend_requests()
+        
+        for request in all_requests:
+            self.reject_friend_request(request["pid"])
+        return len(all_requests)
+
     def block_player(self, summoner_id: str) -> bool:
         """Block player"""
         response = self.lca_hook.post(
@@ -267,6 +308,23 @@ class Sightstone:
         )
 
         return self.is_valid_response(response)
+
+    def remove_friend(self, summoner_id: str) -> bool:
+        """Remove friend"""
+        response = self.lca_hook.delete(
+            path=f"lol-chat/v1/friends/{summoner_id}"
+        )
+
+        return self.is_valid_response(response)
+
+    def remove_friend_from_group(self, group: str) -> int:
+        """Remove friend's from group"""
+        friends = self.get_friends()
+
+        for friend in friends:
+            if friend["groupName"] == group:
+                self.remove_friend(friend["pid"])
+        return len(friends)
 
     def restart_client_ux(self) -> bool:
         """Restarts client UX"""

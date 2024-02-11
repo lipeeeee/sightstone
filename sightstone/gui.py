@@ -81,6 +81,7 @@ def update_friend_groups(sightstone_hook: Sightstone):
         update_friend_groups_thread.time_between_runs = UPDATE_FRIEND_GROUPS_TIMEOUT
     friend_groups = [group["name"] for group in sightstone_hook.get_groups()]
     dpg.configure_item("friendGroups", items=friend_groups)
+    dpg.configure_item("removeFriendGroups", items=friend_groups)
 
 update_info_label_thread: BackgroundThread
 UPDATE_INFO_LABEL_TIMEOUT = 5
@@ -570,16 +571,24 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(label="Still loading personal skin data, Click to force load", tag="loadingSkin", callback=lambda:update_skins_personal_data(sightstone_hook))
 
             with dpg.tab(label="Misc"):
-                dpg.add_separator()
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="Launch Another Client", callback=sightstone_hook.launch_client)
-                    dpg.add_button(label="Close Client", callback=sightstone_hook.close_client, indent=300)
+                with dpg.group():
+                    dpg.add_separator()
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Launch Another Client", callback=sightstone_hook.launch_client)
+                        dpg.add_button(label="Close Client", callback=sightstone_hook.close_client, indent=300)
 
-                with dpg.group(horizontal=True):
-                    dpg.add_button(label="Restart Client UX", callback=sightstone_hook.restart_client_ux)
-                    dpg.add_button(label="Launch Legacy Client", callback=lambda:True, indent=300)
-                dpg.add_separator()
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Restart Client UX", callback=sightstone_hook.restart_client_ux)
+                        dpg.add_button(label="Launch Legacy Client", callback=lambda:True, indent=300)
 
+                with dpg.group():
+                    dpg.add_separator()
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Accept All Friend Requests", callback=sightstone_hook.accept_all_friend_requests)
+                        dpg.add_button(label="Reject All Friend Requests", callback=sightstone_hook.reject_all_friend_request, indent=300)
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Remove All Friend's From Folder: ")
+                        dpg.add_combo(tag="removeFriendGroups", width=104)
             with dpg.tab(label="Custom"):
                 pass
 
