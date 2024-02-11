@@ -1,5 +1,6 @@
 # Main cheat engine
 
+from typing import Any
 import requests
 import webbrowser
 import subprocess
@@ -107,7 +108,7 @@ class Sightstone:
 
     def get_all_friend_requests(self) -> dict:
         """Get's all friend requests"""
-        response = self.lca_hook.get(path="lol-chat/v1/friend-requests/")
+        response = self.lca_hook.get(path="lol-chat/v1/friend-requests")
 
         if response:
             return response.json()
@@ -233,6 +234,7 @@ class Sightstone:
     def accept_all_friend_requests(self) -> int:
         """Accept's all friend requests"""
         all_requests: dict = self.get_all_friend_requests()
+        print(all_requests)
         
         for request in all_requests:
             self.accept_friend_request(request["pid"])
@@ -507,6 +509,15 @@ class Sightstone:
         if response:
             return response.json()
         return dict()
+
+    def submit_ingame_settings(self, settings: Any) -> bool:
+        """Submit ingame settings"""
+        response = self.lca_hook.patch(
+            path="lol-game-settings/v1/game-settings/",
+            json=settings
+        )
+
+        return self.is_valid_response(response)
 
     def custom_game_json(self, game_mode: str, team_size: int, map_code: int) -> dict:
         """Returns the json for a custom game, given `gamemode`, `teamsize` and `map`"""

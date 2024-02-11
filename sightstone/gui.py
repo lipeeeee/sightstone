@@ -587,8 +587,20 @@ def init_gui(sightstone_hook: Sightstone):
                         dpg.add_button(label="Accept All Friend Requests", callback=sightstone_hook.accept_all_friend_requests)
                         dpg.add_button(label="Reject All Friend Requests", callback=sightstone_hook.reject_all_friend_request, indent=300)
                     with dpg.group(horizontal=True):
-                        dpg.add_button(label="Remove All Friend's From Folder: ")
+                        dpg.add_button(label="Remove All Friend's From Folder: ", callback=lambda:sightstone_hook.remove_friend_from_group(dpg.get_value("removeFriendGroups")))
                         dpg.add_combo(tag="removeFriendGroups", width=104)
+
+                with dpg.group():
+                    dpg.add_separator()
+                    with dpg.group(horizontal=True):
+                        dpg.add_text("In-Game Minimap Scale: ")
+                        dpg.add_slider_int(tag="minimapScale", min_value=0, max_value=350, width=300)
+                        dpg.add_button(label="Submit", callback=lambda:sightstone_hook.submit_ingame_settings(
+                            {"HUD": {"MinimapScale": dpg.get_value("minimapScale") / 33.33}}))
+                
+                with dpg.group():
+                    dpg.add_separator()
+
             with dpg.tab(label="Custom"):
                 pass
 

@@ -6,7 +6,7 @@ import urllib3
 from requests.models import Response
 from win32api import GetFileVersionInfo, LOWORD, HIWORD
 from collections import defaultdict
-from typing import DefaultDict
+from typing import Any, DefaultDict
 
 from sightstone.background_thread import BackgroundThread
 from sightstone.windows_calls import execute_cmd_command
@@ -304,6 +304,19 @@ class LeagueConnection:
                 headers=self.riot_header)
         except Exception as e:
             print(f"ERROR IN RIOT_PUT: {e}")
+            return None
+
+    def patch(self, path: str, data: dict | None = None, json: Any | None = None) -> Response | None:
+        """Patch to LCA"""
+        if not self.connected:
+            return None
+
+        try:
+            return requests.patch(
+                self.build_url(path, self.port),
+                data=data, json=json,
+                auth=self.auth, verify=False)
+        except Exception:
             return None
 
     def delete(self, path: str, data: dict | None = None, json: dict | None = None) -> Response | None:
