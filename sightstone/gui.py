@@ -570,7 +570,15 @@ def init_gui(sightstone_hook: Sightstone):
                     dpg.add_button(label="Still loading personal skin data, Click to force load", tag="loadingSkin", callback=lambda:update_skins_personal_data(sightstone_hook))
 
             with dpg.tab(label="Misc"):
-                pass
+                dpg.add_separator()
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Launch Another Client", callback=sightstone_hook.launch_client)
+                    dpg.add_button(label="Close Client", callback=sightstone_hook.close_client, indent=300)
+
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Restart Client UX", callback=sightstone_hook.restart_client_ux)
+                    dpg.add_button(label="Launch Legacy Client", callback=lambda:True, indent=300)
+                dpg.add_separator()
 
             with dpg.tab(label="Custom"):
                 pass

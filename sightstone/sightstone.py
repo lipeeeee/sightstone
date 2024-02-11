@@ -2,6 +2,7 @@
 
 import requests
 import webbrowser
+import subprocess
 from sightstone.lca_hook import LeagueConnection
 from sightstone.background_thread import BackgroundThread
 import sightstone.sightstone_constants as SC
@@ -265,6 +266,26 @@ class Sightstone:
             json={"queueId": lobby_id} if not custom else custom,
         )
 
+        return self.is_valid_response(response)
+
+    def restart_client_ux(self) -> bool:
+        """Restarts client UX"""
+        response = self.lca_hook.post(
+            path="riotclient/kill-and-restart-ux/"
+        )
+
+        return self.is_valid_response(response)
+
+    def launch_client(self) -> None:
+        """Launch's another client"""
+        subprocess.run([self.lca_hook.complete_league_path, "--allow-multiple-clients"])
+
+    def close_client(self) -> bool:
+        """Close client"""
+        response = self.lca_hook.post(
+            path="process-control/v1/process/quit/"
+        )
+        
         return self.is_valid_response(response)
 
     def set_rank(self, rank: str, division: str, queue: str) -> bool:
