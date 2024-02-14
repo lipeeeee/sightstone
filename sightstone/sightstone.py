@@ -98,6 +98,16 @@ class Sightstone:
         except:
             return str()
 
+    def get_loot(self) -> dict:
+        """Get's player loot"""
+        response = self.lca_hook.get(
+            path="lol-loot/v1/player-loot-map/"
+        )
+
+        if response:
+            return response.json()
+        return dict()
+
     def get_current_user(self) -> str | None:
         """Get current client user"""
         response = self.lca_hook.get(path="lol-summoner/v1/current-summoner/")
@@ -194,6 +204,25 @@ class Sightstone:
         lobby_hack = 'destination=lcdsServiceProxy&method=call&args=["","teambuilder-draft","quitV2",""]'
         response = self.lca_hook.post(path=f'lol-login/v1/session/invoke?{lobby_hack}')
 
+        return self.is_valid_response(response)
+
+    def disenchant_all(self, group: str) -> int:
+        """Disenchant all loot from a given group"""
+        all_loot = self.get_loot()
+        disenchanted = 0
+
+        for loot in all_loot:
+            if group == all_loot[loot]["type"]:
+                self.disenchant_loot(group, loot)
+                disenchanted += 1
+        return disenchanted
+
+    def disenchant_loot(self, disenchant_type: str, disenchant_name: str) -> bool:
+        """Disenchant loot given name"""
+        disenchant_string = 'DISENCHANT' if disenchant_type in [SC.ETERNAL_TYPE_1, SC.ETERNAL_TYPE_2] else 'disenchant'
+        response = self.lca_hook.post(
+            path=f"lol-loot/v1/recipes/{disenchant_type}_{disenchant_string}/craft?repeat=1",
+            json=[disenchant_name])
         return self.is_valid_response(response)
 
     def invite_to_lobby(self, summoner_id: str) -> bool:

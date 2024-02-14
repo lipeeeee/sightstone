@@ -60,6 +60,21 @@ DIVISION_ITEMS = {
     "None": str()
 }
 
+ITEM_LOOT_TYPES = {
+    "Champion shards": SC.CHAMPION_SHARD_TYPE,
+    "Champion permanents": SC.CHAMPION_PERMANENT_TYPE,
+    # "Champion Token": SC.CHAMPION_TOKEN_TYPE,
+    "Skin shards": SC.SKIN_SHARD_TYPE,
+    "Skin permanents": SC.SKIN_PERMANENT_TYPE,
+    "Eternals I": SC.ETERNAL_TYPE_1,
+    "Eternals II": SC.ETERNAL_TYPE_2,
+    "Ward shards": SC.WARD_SHARD_TYPE,
+    "Ward permanents": SC.WARD_PERMANENT_TYPE,
+    "Emotes": SC.EMOTE_TYPE,
+    "Icons": SC.ICON_TYPE,
+    "Companions": SC.COMPANION_TYPE,
+}
+
 INSTANT_GROUP_WIDTH = WIDTH - (WIDTH // 3)
 
 """Friend groups"""
@@ -600,15 +615,20 @@ def init_gui(sightstone_hook: Sightstone):
                 
                 with dpg.group():
                     dpg.add_separator()
+                    loot_items = list(ITEM_LOOT_TYPES.keys())
+                    with dpg.group(horizontal=True):
+                        dpg.add_button(label="Disenchant all:", callback=lambda:sightstone_hook.disenchant_all(ITEM_LOOT_TYPES[dpg.get_value("disenchantCombo")]))
+                        dpg.add_combo(tag="disenchantCombo", items=loot_items, default_value=loot_items[0], width=250)
 
-            with dpg.tab(label="Custom"):
-                pass
+            # with dpg.tab(label="Custom"):
+            #     pass
 
-            with dpg.tab(label="Settings"):
-                pass
+            # with dpg.tab(label="Settings"):
+            #     pass
 
             with dpg.tab(label="Test"):
-                dpg.add_button(label="{}", callback=lambda:update_skins_personal_data(sightstone_hook))
+                dpg.add_button(label="aaaaa", callback=lambda:print(sightstone_hook.get_loot()))
+                dpg.add_button(label="all", callback=lambda:sightstone_hook.disenchant_all(SC.SKIN_SHARD_TYPE))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake

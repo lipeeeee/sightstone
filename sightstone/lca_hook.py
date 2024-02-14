@@ -263,7 +263,7 @@ class LeagueConnection:
             print(f"ERROR IN RIOT_GET: {e}")
             return None
 
-    def post(self, path: str, data: dict | None = None, json: dict | list[dict] | None = None) -> Response | None:
+    def post(self, path: str, data: dict | None = None, json: dict | list[Any] | None = None) -> Response | None:
         """Post into LCA"""
         if not self.connected:
             return None
