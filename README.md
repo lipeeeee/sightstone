@@ -2,7 +2,7 @@
 
 ## Download
 - [Stable release](https://github.com/lipeeeee/sightstone/releases/download/v1.0.0/sightstone.exe)
-- [Debug release](https://github.com/lipeeeee/sightstone/releases/download/v1.0.0/sightstone_terminal.exe) Has console terminal attatched to binary.
+- [Dev release](https://github.com/lipeeeee/sightstone/releases/download/v1.0.0/sightstone_terminal.exe) Has console terminal attatched to binary.
 
 ## Features
 * Works every patch
