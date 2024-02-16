@@ -626,9 +626,9 @@ def init_gui(sightstone_hook: Sightstone):
             # with dpg.tab(label="Settings"):
             #     pass
 
-            with dpg.tab(label="Test"):
-                dpg.add_button(label="aaaaa", callback=lambda:print(sightstone_hook.get_loot()))
-                dpg.add_button(label="all", callback=lambda:sightstone_hook.disenchant_all(SC.SKIN_SHARD_TYPE))
+            # with dpg.tab(label="Test"):
+            #     dpg.add_button(label="aaaaa", callback=lambda:print(sightstone_hook.get_loot()))
+            #     dpg.add_button(label="all", callback=lambda:sightstone_hook.disenchant_all(SC.SKIN_SHARD_TYPE))
     dpg.set_primary_window("p1", True)
 
     # safe title for riot detection sake
