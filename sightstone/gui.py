@@ -589,7 +589,7 @@ def init_gui(sightstone_hook: Sightstone):
                 with dpg.group():
                     dpg.add_separator()
                     with dpg.group(horizontal=True):
-                        dpg.add_button(label="Launch Another Client", callback=sightstone_hook.launch_client)
+                        dpg.add_button(label="Launch Another Client", callback=lambda:sightstone_hook.launch_client(args=""))
                         dpg.add_button(label="Close Client", callback=sightstone_hook.close_client, indent=300)
 
                     with dpg.group(horizontal=True):

@@ -365,9 +365,9 @@ class Sightstone:
 
         return self.is_valid_response(response)
 
-    def launch_client(self) -> None:
+    def launch_client(self, args: str = "") -> None:
         """Launch's another client"""
-        subprocess.run([self.lca_hook.complete_league_path, "--allow-multiple-clients"])
+        subprocess.run([self.lca_hook.complete_league_path, f"--allow-multiple-clients {args}"])
 
     def close_client(self) -> bool:
         """Close client"""

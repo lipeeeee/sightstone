@@ -103,3 +103,16 @@ WARD_PERMANENT_TYPE = "WARD_SKIN"
 EMOTE_TYPE = "EMOTE"
 ICON_TYPE = "SUMMONER_ICON"
 COMPANION_TYPE = "COMPANION"
+
+# Client Languages
+CLIENT_LANGUAGES = {
+    "English (US)": "en_US", "Japanese": "ja_JP", "Korean": "ko_KR",
+    "Chinese (China)": "zh_CN", "German": "de_DE", "Spanish (Spain)": "es_ES",
+    "Polish": "pl_PL", "Russian": "ru_RU", "French": "fr_FR", "Turkish": "tr_TR",
+    "Portuguese": "pt_BR", "Czech": "cs_CZ", "Greek": "el_GR", "Romanian": "ro_RO",
+    "Hungarian": "hu_HU", "English (UK)": "en_GB", "Italian": "it_IT", "Spanish (Mexico)": "es_MX",
+    "Spanish (Argentina)": "es_AR", "English (Australia)": "en_AU", "Malay": "ms_MY",
+    "English (Philippines)": "en_PH", "English (Singapore)": "en_SG", "Thai": "th_TH",
+    "Vietnamese": "vi_VN", "Indonesian": "id_ID", "Tagalog": "tl_PH", 
+    "Chinese (Malaysia)": "zh_MY", "Chinese (Taiwan)": "zh_TW"
+}
