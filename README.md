@@ -1,23 +1,3 @@
 # sightstone
+![image](https://github.com/lipeeeee/sightstone/assets/62669782/937e446e-aa68-4128-862d-10f8776c1b5b)
 
-# t
-EVERY REQUEST SHOULD BE THREADED!
-
-# IGIDK
-QUICK LOGIN
-
-MY OPGG
-
-INSTA MUTE
-
-CONFIG FILE
-
-ACTUAL LOGGING SYSTEM
-
-# REFACTOR
-GUI.PY - TAGS SHOULD BE CONSTANTS
-
-
-# instant message thread:
-on auto accept and status code == 204, start insta message thread
-after valid response kill thread
