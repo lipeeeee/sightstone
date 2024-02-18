@@ -36,3 +36,9 @@
 * Launch legacy client(patched)
 * Set custom in-game minimap scale
 * Disenchant any loot you want with 1 click (mass disenchant)
+
+### Credits
+- https://github.com/RyzinGit/LoL-Lobby-Dodger
+- https://github.com/MManoah/league-profile-tool
+- https://github.com/x00bence/lol-aram-boost
+- https://github.com/KebsCS/KBotExt
